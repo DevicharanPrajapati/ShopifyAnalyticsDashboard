@@ -100,8 +100,8 @@ const OrdersPage = () => {
       if (res.data.success) {
         setOrderStats(res.data.data);
       }
-    } catch (err) {
-      console.error('Failed to load order analytics:', err);
+    } catch {
+      // Handled silently to avoid polluting console
     } finally {
       setStatsLoading(false);
     }

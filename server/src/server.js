@@ -11,9 +11,7 @@ const startServer = async () => {
   await connectDB();
 
   app.listen(PORT, () => {
-    console.log(`🚀 Server running on port ${PORT} in ${process.env.NODE_ENV || 'development'} mode`);
-    console.log(`👉 API Health Check: http://localhost:${PORT}/api/health`);
-    console.log(`👉 Analytics API: http://localhost:${PORT}/api/analytics/dashboard`);
+    console.log(`🚀 Server running on port ${PORT}`);
   });
 };
 

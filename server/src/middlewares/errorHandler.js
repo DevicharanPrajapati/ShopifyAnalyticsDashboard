@@ -49,8 +49,8 @@ export const errorHandler = (err, req, res, next) => {
     error = new ApiError(statusCode, message, errors, err.stack);
   }
 
-  // Log error in development/test
-  if (process.env.NODE_ENV !== 'test') {
+  // Log error in development only
+  if (process.env.NODE_ENV === 'development') {
     console.error(`❌ [Error ${error.statusCode}] ${req.method} ${req.originalUrl}:`, error.message);
   }
 

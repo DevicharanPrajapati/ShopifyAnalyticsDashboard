@@ -109,8 +109,8 @@ const ProductsPage = () => {
       if (res.data.success) {
         setProductStats(res.data.data);
       }
-    } catch (err) {
-      console.error('Failed to fetch product stats:', err);
+    } catch {
+      // Handled silently to avoid polluting console
     } finally {
       setStatsLoading(false);
     }
