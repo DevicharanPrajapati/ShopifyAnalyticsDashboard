@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import {
   ShoppingCart,
@@ -33,6 +33,9 @@ const DashboardPage = () => {
     error,
   } = useSelector((state) => state.analytics);
 
+  // Shopify-style interactive metric state ('revenue' | 'orders' | 'conversion' | 'aov')
+  const [selectedMetric, setSelectedMetric] = useState('revenue');
+
   const loadData = () => {
     dispatch(fetchDashboardData(dateFilter));
   };
@@ -47,6 +50,26 @@ const DashboardPage = () => {
 
   const { current, percentageChanges } = overview;
 
+  // Combine daily revenue and traffic trends so any metric can be plotted seamlessly
+  const combinedTrend = (revenueTrend || []).map((item) => {
+    const traffic = (trafficTrend || []).find((t) => t.date === item.date);
+    const visitors = traffic?.visitors || (item.orders > 0 ? item.orders * 26 : 0);
+    const conversionRate =
+      traffic?.conversionRate !== undefined
+        ? traffic.conversionRate
+        : visitors > 0
+        ? Number(((item.orders / visitors) * 100).toFixed(2))
+        : 0;
+    const aov = item.orders > 0 ? Math.round(item.revenue / item.orders) : 0;
+
+    return {
+      ...item,
+      visitors,
+      conversionRate,
+      aov,
+    };
+  });
+
   return (
     <div className="space-y-6">
       {/* Page Header */}
@@ -56,7 +79,7 @@ const DashboardPage = () => {
             Store Performance
           </h1>
           <p className="text-xs sm:text-sm text-slate-500 mt-1">
-            Real-time sales trends, conversions, and customer analytics
+            Real-time sales trends, conversions, and customer analytics for <span className="font-bold text-slate-700">Apex Retailers</span>
           </p>
         </div>
       </div>
@@ -76,7 +99,11 @@ const DashboardPage = () => {
           <div className="flex-1">
             <p className="font-bold">Backend Connection Notice</p>
             <p className="mt-0.5 text-rose-700">
-              {error}. Ensure your backend server is running on <code className="bg-rose-100 px-1.5 py-0.5 rounded font-mono">http://localhost:5000</code> and MongoDB is connected.
+              {error}. Ensure your backend server is running on{' '}
+              <code className="bg-rose-100 px-1.5 py-0.5 rounded font-mono">
+                http://localhost:5000
+              </code>{' '}
+              and MongoDB is connected.
             </p>
           </div>
           <button
@@ -92,7 +119,7 @@ const DashboardPage = () => {
         <SkeletonLoader />
       ) : (
         <div className="space-y-6">
-          {/* 4 Core Shopify KPI Cards in Indian Rupees (₹) */}
+          {/* 4 Interactive Shopify-Style Metric Cards: Clicking any card displays it in the chart below */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
             <MetricCard
               title="Total Revenue"
@@ -101,6 +128,8 @@ const DashboardPage = () => {
               change={percentageChanges.totalRevenue}
               icon={IndianRupee}
               subtext="vs. previous period"
+              isActive={selectedMetric === 'revenue'}
+              onClick={() => setSelectedMetric('revenue')}
             />
 
             <MetricCard
@@ -110,6 +139,8 @@ const DashboardPage = () => {
               change={percentageChanges.totalOrders}
               icon={ShoppingCart}
               subtext="vs. previous period"
+              isActive={selectedMetric === 'orders'}
+              onClick={() => setSelectedMetric('orders')}
             />
 
             <MetricCard
@@ -120,6 +151,8 @@ const DashboardPage = () => {
               change={percentageChanges.conversionRate}
               icon={Percent}
               subtext="orders / visitors"
+              isActive={selectedMetric === 'conversion'}
+              onClick={() => setSelectedMetric('conversion')}
             />
 
             <MetricCard
@@ -129,11 +162,18 @@ const DashboardPage = () => {
               change={percentageChanges.averageOrderValue}
               icon={TrendingUp}
               subtext="revenue / orders"
+              isActive={selectedMetric === 'aov'}
+              onClick={() => setSelectedMetric('aov')}
             />
           </div>
 
-          {/* Chart 1: Revenue & Sales Over Time (Area Chart) */}
-          <RevenueChart data={revenueTrend} />
+          {/* Interactive Chart: Morphs based on the active KPI card selected */}
+          <RevenueChart
+            data={combinedTrend}
+            selectedMetric={selectedMetric}
+            onMetricChange={setSelectedMetric}
+            overview={overview}
+          />
 
           {/* Charts Row 2: Traffic vs Conversion (Bar Chart) + Category Share (Horizontal Bar Chart) */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">

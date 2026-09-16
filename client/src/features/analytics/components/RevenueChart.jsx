@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import {
   AreaChart,
   Area,
@@ -8,145 +8,329 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from 'recharts';
-import { TrendingUp, DollarSign, ShoppingCart } from 'lucide-react';
+import {
+  IndianRupee,
+  ShoppingCart,
+  Percent,
+  TrendingUp,
+} from 'lucide-react';
 
-const CustomTooltip = ({ active, payload, label }) => {
+const METRIC_CONFIG = {
+  revenue: {
+    key: 'revenue',
+    label: 'Total Revenue',
+    shortLabel: 'Revenue',
+    icon: IndianRupee,
+    unitPrefix: '₹',
+    unitSuffix: '',
+    stroke: '#10b981', // Emerald
+    gradientId: 'colorRevenue',
+    gradientColor: '#10b981',
+    yAxisFormatter: (val) =>
+      val >= 100000
+        ? `₹${(val / 100000).toFixed(1)}L`
+        : val >= 1000
+        ? `₹${(val / 1000).toFixed(0)}k`
+        : `₹${val}`,
+    tooltipFormatter: (val) => `₹${(val || 0).toLocaleString('en-IN')}`,
+  },
+  orders: {
+    key: 'orders',
+    label: 'Total Orders',
+    shortLabel: 'Orders',
+    icon: ShoppingCart,
+    unitPrefix: '',
+    unitSuffix: ' orders',
+    stroke: '#0284c7', // Sky Blue
+    gradientId: 'colorOrders',
+    gradientColor: '#0ea5e9',
+    yAxisFormatter: (val) => val,
+    tooltipFormatter: (val) => `${val || 0} orders`,
+  },
+  conversion: {
+    key: 'conversionRate',
+    label: 'Online Store Conversion Rate',
+    shortLabel: 'Conversion',
+    icon: Percent,
+    unitPrefix: '',
+    unitSuffix: '%',
+    stroke: '#d97706', // Amber
+    gradientId: 'colorConversion',
+    gradientColor: '#f59e0b',
+    yAxisFormatter: (val) => `${val}%`,
+    tooltipFormatter: (val) => `${val || 0}%`,
+  },
+  aov: {
+    key: 'aov',
+    label: 'Average Order Value (AOV)',
+    shortLabel: 'Avg Order Value',
+    icon: TrendingUp,
+    unitPrefix: '₹',
+    unitSuffix: '',
+    stroke: '#7c3aed', // Purple
+    gradientId: 'colorAov',
+    gradientColor: '#8b5cf6',
+    yAxisFormatter: (val) =>
+      val >= 1000 ? `₹${(val / 1000).toFixed(1)}k` : `₹${val}`,
+    tooltipFormatter: (val) => `₹${(val || 0).toLocaleString('en-IN')}`,
+  },
+};
+
+const CustomTooltip = ({ active, payload, label, activeMetricKey }) => {
   if (active && payload && payload.length) {
     const data = payload[0].payload;
+    const config = METRIC_CONFIG[activeMetricKey] || METRIC_CONFIG.revenue;
+
     return (
-      <div className="bg-slate-900 text-white p-2.5 sm:p-3 rounded-xl shadow-xl text-xs border border-slate-800">
-        <p className="font-semibold text-slate-300 border-b border-slate-800 pb-1 mb-1.5">{label}</p>
-        <p className="flex items-center justify-between gap-4 text-emerald-400 font-bold">
-          <span>Revenue:</span>
-          <span>₹{data.revenue?.toLocaleString('en-IN')}</span>
+      <div className="bg-slate-900 text-white p-3 rounded-xl shadow-xl text-xs border border-slate-800 min-w-[190px]">
+        <p className="font-bold text-slate-300 border-b border-slate-800 pb-1.5 mb-2">
+          {label}
         </p>
-        <p className="flex items-center justify-between gap-4 text-sky-400 font-medium mt-1">
-          <span>Orders:</span>
-          <span>{data.orders}</span>
-        </p>
+
+        {/* Primary Selected Metric */}
+        <div className="flex items-center justify-between gap-3 text-sm font-extrabold pb-1">
+          <span style={{ color: config.stroke }}>{config.shortLabel}:</span>
+          <span className="text-white">
+            {config.tooltipFormatter(data[config.key])}
+          </span>
+        </div>
+
+        {/* Secondary Contextual Metrics */}
+        <div className="pt-1.5 border-t border-slate-800/80 space-y-1 text-[11px] text-slate-400">
+          {activeMetricKey !== 'revenue' && (
+            <div className="flex items-center justify-between">
+              <span>Day Revenue:</span>
+              <span className="text-slate-200 font-semibold">
+                ₹{(data.revenue || 0).toLocaleString('en-IN')}
+              </span>
+            </div>
+          )}
+          {activeMetricKey !== 'orders' && (
+            <div className="flex items-center justify-between">
+              <span>Day Orders:</span>
+              <span className="text-slate-200 font-semibold">{data.orders || 0}</span>
+            </div>
+          )}
+          {activeMetricKey !== 'conversion' && (
+            <div className="flex items-center justify-between">
+              <span>Conversion:</span>
+              <span className="text-slate-200 font-semibold">
+                {data.conversionRate || 0}%
+              </span>
+            </div>
+          )}
+          {activeMetricKey !== 'aov' && (
+            <div className="flex items-center justify-between">
+              <span>Avg Basket:</span>
+              <span className="text-slate-200 font-semibold">
+                ₹{(data.aov || 0).toLocaleString('en-IN')}
+              </span>
+            </div>
+          )}
+        </div>
       </div>
     );
   }
   return null;
 };
 
-const RevenueChart = ({ data = [] }) => {
-  const [metric, setMetric] = useState('revenue'); // 'revenue' or 'orders'
+const RevenueChart = ({
+  data = [],
+  selectedMetric = 'revenue',
+  onMetricChange,
+  overview,
+}) => {
+  const activeConfig = METRIC_CONFIG[selectedMetric] || METRIC_CONFIG.revenue;
+  const ActiveIcon = activeConfig.icon;
 
   const formattedData = data.map((item) => {
     const dateObj = new Date(item.date);
-    const label = !isNaN(dateObj)
+    const displayDate = !isNaN(dateObj)
       ? dateObj.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
       : item.date;
+
     return {
       ...item,
-      displayDate: label,
+      displayDate,
     };
   });
 
-  const totalPeriodRevenue = data.reduce((sum, item) => sum + (item.revenue || 0), 0);
-  const totalPeriodOrders = data.reduce((sum, item) => sum + (item.orders || 0), 0);
+  // Calculate Period Totals or Averages
+  const totalRevenue = data.reduce((sum, item) => sum + (item.revenue || 0), 0);
+  const totalOrders = data.reduce((sum, item) => sum + (item.orders || 0), 0);
+  const avgConversion = overview?.current?.conversionRate || 0;
+  const avgAov = overview?.current?.averageOrderValue || (totalOrders > 0 ? Math.round(totalRevenue / totalOrders) : 0);
+
+  const getSubtext = () => {
+    switch (selectedMetric) {
+      case 'orders':
+        return (
+          <>
+            Period Total:{' '}
+            <span className="font-bold text-slate-900">{totalOrders} completed orders</span>
+            {' • '}
+            <span className="text-slate-500">
+              ₹{totalRevenue.toLocaleString('en-IN', { maximumFractionDigits: 0 })} net revenue
+            </span>
+          </>
+        );
+      case 'conversion':
+        return (
+          <>
+            Period Average:{' '}
+            <span className="font-bold text-slate-900">{avgConversion}%</span>
+            {' • '}
+            <span className="text-slate-500">
+              {totalOrders} conversions from store visits
+            </span>
+          </>
+        );
+      case 'aov':
+        return (
+          <>
+            Period Average:{' '}
+            <span className="font-bold text-slate-900">
+              ₹{avgAov.toLocaleString('en-IN')} per order
+            </span>
+            {' • '}
+            <span className="text-slate-500">{totalOrders} orders evaluated</span>
+          </>
+        );
+      case 'revenue':
+      default:
+        return (
+          <>
+            Period Total:{' '}
+            <span className="font-bold text-slate-900">
+              ₹{totalRevenue.toLocaleString('en-IN', { maximumFractionDigits: 0 })}
+            </span>
+            {' • '}
+            <span className="text-slate-700 font-semibold">{totalOrders} orders</span>
+          </>
+        );
+    }
+  };
 
   return (
     <div className="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200 shadow-xs min-w-0 w-full overflow-hidden">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4 sm:mb-6">
+      {/* Header with Title and Shopify-Style Metric Switcher Pills */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 mb-5">
         <div>
           <div className="flex items-center space-x-2">
-            <TrendingUp className="w-5 h-5 text-emerald-600 flex-shrink-0" />
-            <h2 className="text-sm sm:text-base font-bold text-slate-900">Revenue & Sales Over Time</h2>
+            <div
+              className="w-7 h-7 rounded-lg flex items-center justify-center text-white shadow-xs"
+              style={{ backgroundColor: activeConfig.stroke }}
+            >
+              <ActiveIcon className="w-4 h-4" />
+            </div>
+            <h2 className="text-base sm:text-lg font-bold text-slate-900">
+              {activeConfig.label} Over Time
+            </h2>
           </div>
-          <p className="text-[11px] sm:text-xs text-slate-500 mt-0.5 sm:mt-1">
-            Period Total:{' '}
-            <span className="font-bold text-slate-900">
-              ₹{totalPeriodRevenue.toLocaleString('en-IN', { maximumFractionDigits: 2 })}
-            </span>
-            {' • '}
-            <span className="font-bold text-slate-800">{totalPeriodOrders} orders</span>
-          </p>
+          <p className="text-xs text-slate-500 mt-1">{getSubtext()}</p>
         </div>
 
-        {/* View Toggle */}
-        <div className="inline-flex bg-slate-100 p-1 rounded-xl self-start sm:self-auto">
-          <button
-            onClick={() => setMetric('revenue')}
-            className={`flex items-center space-x-1 px-2.5 sm:px-3 py-1 text-xs font-semibold rounded-lg transition-all cursor-pointer ${
-              metric === 'revenue'
-                ? 'bg-white text-slate-900 shadow-xs'
-                : 'text-slate-500 hover:text-slate-900'
-            }`}
-          >
-            <span>₹ Revenue</span>
-          </button>
-          <button
-            onClick={() => setMetric('orders')}
-            className={`flex items-center space-x-1 px-2.5 sm:px-3 py-1 text-xs font-semibold rounded-lg transition-all cursor-pointer ${
-              metric === 'orders'
-                ? 'bg-white text-slate-900 shadow-xs'
-                : 'text-slate-500 hover:text-slate-900'
-            }`}
-          >
-            <ShoppingCart className="w-3.5 h-3.5" />
-            <span>Orders</span>
-          </button>
+        {/* Shopify-Style Direct Metric Selector Pills */}
+        <div className="inline-flex bg-slate-100 p-1 rounded-xl self-start md:self-auto overflow-x-auto max-w-full">
+          {Object.entries(METRIC_CONFIG).map(([metricKey, cfg]) => {
+            const Icon = cfg.icon;
+            const isSelected = selectedMetric === metricKey;
+
+            return (
+              <button
+                key={metricKey}
+                onClick={() => onMetricChange && onMetricChange(metricKey)}
+                className={`flex items-center space-x-1.5 px-3 py-1.5 text-xs font-bold rounded-lg transition-all cursor-pointer whitespace-nowrap active:scale-95 ${
+                  isSelected
+                    ? 'bg-white text-slate-900 shadow-xs ring-1 ring-slate-200/80'
+                    : 'text-slate-500 hover:text-slate-900 hover:bg-slate-200/60'
+                }`}
+              >
+                <Icon
+                  className="w-3.5 h-3.5"
+                  style={{ color: isSelected ? cfg.stroke : undefined }}
+                />
+                <span>{cfg.shortLabel}</span>
+              </button>
+            );
+          })}
         </div>
       </div>
 
       {/* Recharts Area Chart */}
-      <div className="w-full h-56 sm:h-72 lg:h-80 min-w-0 overflow-hidden">
+      <div className="w-full h-64 sm:h-72 lg:h-80 min-w-0 overflow-hidden">
         {formattedData.length === 0 ? (
           <div className="w-full h-full flex items-center justify-center text-slate-400 text-xs sm:text-sm">
-            No transaction data available for this range
+            No transaction records available for this date window
           </div>
         ) : (
           <ResponsiveContainer width="100%" height="100%">
-            <AreaChart data={formattedData} margin={{ top: 10, right: 10, left: -15, bottom: 0 }}>
+            <AreaChart
+              data={formattedData}
+              margin={{ top: 10, right: 10, left: -10, bottom: 0 }}
+            >
               <defs>
-                <linearGradient id="colorRevenue" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#10b981" stopOpacity={0.4} />
-                  <stop offset="95%" stopColor="#10b981" stopOpacity={0.0} />
-                </linearGradient>
-                <linearGradient id="colorOrders" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#0ea5e9" stopOpacity={0.4} />
-                  <stop offset="95%" stopColor="#0ea5e9" stopOpacity={0.0} />
+                <linearGradient
+                  id={activeConfig.gradientId}
+                  x1="0%"
+                  y1="0%"
+                  x2="0%"
+                  y2="100%"
+                >
+                  <stop
+                    offset="5%"
+                    stopColor={activeConfig.gradientColor}
+                    stopOpacity={0.4}
+                  />
+                  <stop
+                    offset="95%"
+                    stopColor={activeConfig.gradientColor}
+                    stopOpacity={0.0}
+                  />
                 </linearGradient>
               </defs>
-              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
+
+              <CartesianGrid
+                strokeDasharray="3 3"
+                vertical={false}
+                stroke="#f1f5f9"
+              />
+
               <XAxis
                 dataKey="displayDate"
                 tickLine={false}
                 axisLine={{ stroke: '#e2e8f0' }}
                 tick={{ fill: '#64748b', fontSize: 10 }}
-                minTickGap={28}
+                minTickGap={25}
               />
+
               <YAxis
                 tickLine={false}
                 axisLine={{ stroke: '#e2e8f0' }}
                 tick={{ fill: '#64748b', fontSize: 10 }}
-                width={55}
-                tickFormatter={(val) => (metric === 'revenue' ? (val >= 1000 ? `₹${(val / 1000).toFixed(0)}k` : `₹${val}`) : val)}
+                width={50}
+                tickFormatter={activeConfig.yAxisFormatter}
               />
-              <Tooltip content={<CustomTooltip />} />
-              {metric === 'revenue' ? (
-                <Area
-                  type="monotone"
-                  dataKey="revenue"
-                  stroke="#10b981"
-                  strokeWidth={2.5}
-                  fillOpacity={1}
-                  fill="url(#colorRevenue)"
-                  activeDot={{ r: 5, fill: '#10b981', stroke: '#ffffff', strokeWidth: 2 }}
-                />
-              ) : (
-                <Area
-                  type="monotone"
-                  dataKey="orders"
-                  stroke="#0ea5e9"
-                  strokeWidth={2.5}
-                  fillOpacity={1}
-                  fill="url(#colorOrders)"
-                  activeDot={{ r: 5, fill: '#0ea5e9', stroke: '#ffffff', strokeWidth: 2 }}
-                />
-              )}
+
+              <Tooltip
+                content={<CustomTooltip activeMetricKey={selectedMetric} />}
+              />
+
+              <Area
+                type="monotone"
+                dataKey={activeConfig.key}
+                name={activeConfig.label}
+                stroke={activeConfig.stroke}
+                strokeWidth={2.5}
+                fillOpacity={1}
+                fill={`url(#${activeConfig.gradientId})`}
+                activeDot={{
+                  r: 6,
+                  fill: activeConfig.stroke,
+                  stroke: '#ffffff',
+                  strokeWidth: 2,
+                }}
+              />
             </AreaChart>
           </ResponsiveContainer>
         )}
