@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import {
   AreaChart,
   Area,
@@ -11,7 +11,7 @@ import {
   CartesianGrid,
   Tooltip,
   ResponsiveContainer,
-} from 'recharts';
+} from "recharts";
 import {
   IndianRupee,
   ShoppingCart,
@@ -20,66 +20,66 @@ import {
   AreaChart as AreaIcon,
   BarChart2,
   LineChart as LineIcon,
-} from 'lucide-react';
+} from "lucide-react";
 
 const METRIC_CONFIG = {
   revenue: {
-    key: 'revenue',
-    label: 'Total Revenue',
-    shortLabel: 'Revenue',
+    key: "revenue",
+    label: "Total Revenue",
+    shortLabel: "Revenue",
     icon: IndianRupee,
-    unitPrefix: '₹',
-    unitSuffix: '',
-    stroke: '#10b981', // Emerald
-    gradientId: 'colorRevenue',
-    gradientColor: '#10b981',
+    unitPrefix: "₹",
+    unitSuffix: "",
+    stroke: "#10b981", // Emerald
+    gradientId: "colorRevenue",
+    gradientColor: "#10b981",
     yAxisFormatter: (val) =>
       val >= 100000
         ? `₹${(val / 100000).toFixed(1)}L`
         : val >= 1000
-        ? `₹${(val / 1000).toFixed(0)}k`
-        : `₹${val}`,
-    tooltipFormatter: (val) => `₹${(val || 0).toLocaleString('en-IN')}`,
+          ? `₹${(val / 1000).toFixed(0)}k`
+          : `₹${val}`,
+    tooltipFormatter: (val) => `₹${(val || 0).toLocaleString("en-IN")}`,
   },
   orders: {
-    key: 'orders',
-    label: 'Total Orders',
-    shortLabel: 'Orders',
+    key: "orders",
+    label: "Total Orders",
+    shortLabel: "Orders",
     icon: ShoppingCart,
-    unitPrefix: '',
-    unitSuffix: ' orders',
-    stroke: '#0284c7', // Sky Blue
-    gradientId: 'colorOrders',
-    gradientColor: '#0ea5e9',
+    unitPrefix: "",
+    unitSuffix: " orders",
+    stroke: "#0284c7", // Sky Blue
+    gradientId: "colorOrders",
+    gradientColor: "#0ea5e9",
     yAxisFormatter: (val) => val,
     tooltipFormatter: (val) => `${val || 0} orders`,
   },
   conversion: {
-    key: 'conversionRate',
-    label: 'Online Store Conversion Rate',
-    shortLabel: 'Conversion',
+    key: "conversionRate",
+    label: "Online Store Conversion Rate",
+    shortLabel: "Conversion",
     icon: Percent,
-    unitPrefix: '',
-    unitSuffix: '%',
-    stroke: '#d97706', // Amber
-    gradientId: 'colorConversion',
-    gradientColor: '#f59e0b',
+    unitPrefix: "",
+    unitSuffix: "%",
+    stroke: "#d97706", // Amber
+    gradientId: "colorConversion",
+    gradientColor: "#f59e0b",
     yAxisFormatter: (val) => `${val}%`,
     tooltipFormatter: (val) => `${val || 0}%`,
   },
   aov: {
-    key: 'aov',
-    label: 'Average Order Value (AOV)',
-    shortLabel: 'Avg Order Value',
+    key: "aov",
+    label: "Average Order Value (AOV)",
+    shortLabel: "Avg Order Value",
     icon: TrendingUp,
-    unitPrefix: '₹',
-    unitSuffix: '',
-    stroke: '#7c3aed', // Purple
-    gradientId: 'colorAov',
-    gradientColor: '#8b5cf6',
+    unitPrefix: "₹",
+    unitSuffix: "",
+    stroke: "#7c3aed", // Purple
+    gradientId: "colorAov",
+    gradientColor: "#8b5cf6",
     yAxisFormatter: (val) =>
       val >= 1000 ? `₹${(val / 1000).toFixed(1)}k` : `₹${val}`,
-    tooltipFormatter: (val) => `₹${(val || 0).toLocaleString('en-IN')}`,
+    tooltipFormatter: (val) => `₹${(val || 0).toLocaleString("en-IN")}`,
   },
 };
 
@@ -104,21 +104,23 @@ const CustomTooltip = ({ active, payload, label, activeMetricKey }) => {
 
         {/* Supporting Contextual Metrics */}
         <div className="pt-1.5 border-t border-slate-800/80 space-y-1 text-[11px] text-slate-400">
-          {activeMetricKey !== 'revenue' && (
+          {activeMetricKey !== "revenue" && (
             <div className="flex items-center justify-between">
               <span>Day Revenue:</span>
               <span className="text-slate-200 font-semibold">
-                ₹{(data.revenue || 0).toLocaleString('en-IN')}
+                ₹{(data.revenue || 0).toLocaleString("en-IN")}
               </span>
             </div>
           )}
-          {activeMetricKey !== 'orders' && (
+          {activeMetricKey !== "orders" && (
             <div className="flex items-center justify-between">
               <span>Day Orders:</span>
-              <span className="text-slate-200 font-semibold">{data.orders || 0}</span>
+              <span className="text-slate-200 font-semibold">
+                {data.orders || 0}
+              </span>
             </div>
           )}
-          {activeMetricKey !== 'conversion' && (
+          {activeMetricKey !== "conversion" && (
             <div className="flex items-center justify-between">
               <span>Conversion:</span>
               <span className="text-slate-200 font-semibold">
@@ -126,11 +128,11 @@ const CustomTooltip = ({ active, payload, label, activeMetricKey }) => {
               </span>
             </div>
           )}
-          {activeMetricKey !== 'aov' && (
+          {activeMetricKey !== "aov" && (
             <div className="flex items-center justify-between">
               <span>Avg Basket:</span>
               <span className="text-slate-200 font-semibold">
-                ₹{(data.aov || 0).toLocaleString('en-IN')}
+                ₹{(data.aov || 0).toLocaleString("en-IN")}
               </span>
             </div>
           )}
@@ -141,24 +143,20 @@ const CustomTooltip = ({ active, payload, label, activeMetricKey }) => {
   return null;
 };
 
-const RevenueChart = ({
-  data = [],
-  selectedMetric = 'revenue',
-  overview,
-}) => {
+const RevenueChart = ({ data = [], selectedMetric = "revenue", overview }) => {
   // Chart Style / Type State ('area' | 'bar' | 'line') with localStorage persistence
   const [chartType, setChartType] = useState(() => {
     try {
-      return localStorage.getItem('shopify_chart_type') || 'area';
+      return localStorage.getItem("shopify_chart_type") || "area";
     } catch {
-      return 'area';
+      return "area";
     }
   });
 
   const handleChartTypeChange = (type) => {
     setChartType(type);
     try {
-      localStorage.setItem('shopify_chart_type', type);
+      localStorage.setItem("shopify_chart_type", type);
     } catch {
       // ignore
     }
@@ -170,7 +168,7 @@ const RevenueChart = ({
   const formattedData = data.map((item) => {
     const dateObj = new Date(item.date);
     const displayDate = !isNaN(dateObj)
-      ? dateObj.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+      ? dateObj.toLocaleDateString("en-US", { month: "short", day: "numeric" })
       : item.date;
 
     return {
@@ -183,53 +181,68 @@ const RevenueChart = ({
   const totalRevenue = data.reduce((sum, item) => sum + (item.revenue || 0), 0);
   const totalOrders = data.reduce((sum, item) => sum + (item.orders || 0), 0);
   const avgConversion = overview?.current?.conversionRate || 0;
-  const avgAov = overview?.current?.averageOrderValue || (totalOrders > 0 ? Math.round(totalRevenue / totalOrders) : 0);
+  const avgAov =
+    overview?.current?.averageOrderValue ||
+    (totalOrders > 0 ? Math.round(totalRevenue / totalOrders) : 0);
 
   const getSubtext = () => {
     switch (selectedMetric) {
-      case 'orders':
+      case "orders":
         return (
           <>
-            Period Total:{' '}
-            <span className="font-bold text-slate-900">{totalOrders} completed orders</span>
-            {' • '}
+            Period Total:{" "}
+            <span className="font-bold text-slate-900">
+              {totalOrders} completed orders
+            </span>
+            {" • "}
             <span className="text-slate-500">
-              ₹{totalRevenue.toLocaleString('en-IN', { maximumFractionDigits: 0 })} net revenue
+              ₹
+              {totalRevenue.toLocaleString("en-IN", {
+                maximumFractionDigits: 0,
+              })}{" "}
+              net revenue
             </span>
           </>
         );
-      case 'conversion':
+      case "conversion":
         return (
           <>
-            Period Average:{' '}
+            Period Average:{" "}
             <span className="font-bold text-slate-900">{avgConversion}%</span>
-            {' • '}
+            {" • "}
             <span className="text-slate-500">
               {totalOrders} conversions from store visits
             </span>
           </>
         );
-      case 'aov':
+      case "aov":
         return (
           <>
-            Period Average:{' '}
+            Period Average:{" "}
             <span className="font-bold text-slate-900">
-              ₹{avgAov.toLocaleString('en-IN')} per order
+              ₹{avgAov.toLocaleString("en-IN")} per order
             </span>
-            {' • '}
-            <span className="text-slate-500">{totalOrders} orders evaluated</span>
+            {" • "}
+            <span className="text-slate-500">
+              {totalOrders} orders evaluated
+            </span>
           </>
         );
-      case 'revenue':
+      case "revenue":
       default:
         return (
           <>
-            Period Total:{' '}
+            Period Total:{" "}
             <span className="font-bold text-slate-900">
-              ₹{totalRevenue.toLocaleString('en-IN', { maximumFractionDigits: 0 })}
+              ₹
+              {totalRevenue.toLocaleString("en-IN", {
+                maximumFractionDigits: 0,
+              })}
             </span>
-            {' • '}
-            <span className="text-slate-700 font-semibold">{totalOrders} orders</span>
+            {" • "}
+            <span className="text-slate-700 font-semibold">
+              {totalOrders} orders
+            </span>
           </>
         );
     }
@@ -258,11 +271,11 @@ const RevenueChart = ({
           {/* Chart Style / Type Switcher: Area | Bar | Line */}
           <div className="flex items-center bg-slate-100 p-1 rounded-xl border border-slate-200/80">
             <button
-              onClick={() => handleChartTypeChange('area')}
+              onClick={() => handleChartTypeChange("area")}
               className={`px-2.5 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
-                chartType === 'area'
-                  ? 'bg-white text-emerald-700 shadow-xs ring-1 ring-slate-200/80'
-                  : 'text-slate-500 hover:text-slate-900'
+                chartType === "area"
+                  ? "bg-white text-emerald-700 shadow-xs ring-1 ring-slate-200/80"
+                  : "text-slate-500 hover:text-slate-900"
               }`}
               title="Area Chart (Smooth gradient fill)"
             >
@@ -271,11 +284,11 @@ const RevenueChart = ({
             </button>
 
             <button
-              onClick={() => handleChartTypeChange('bar')}
+              onClick={() => handleChartTypeChange("bar")}
               className={`px-2.5 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
-                chartType === 'bar'
-                  ? 'bg-white text-emerald-700 shadow-xs ring-1 ring-slate-200/80'
-                  : 'text-slate-500 hover:text-slate-900'
+                chartType === "bar"
+                  ? "bg-white text-emerald-700 shadow-xs ring-1 ring-slate-200/80"
+                  : "text-slate-500 hover:text-slate-900"
               }`}
               title="Bar Chart (Discrete columns)"
             >
@@ -284,11 +297,11 @@ const RevenueChart = ({
             </button>
 
             <button
-              onClick={() => handleChartTypeChange('line')}
+              onClick={() => handleChartTypeChange("line")}
               className={`px-2.5 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
-                chartType === 'line'
-                  ? 'bg-white text-emerald-700 shadow-xs ring-1 ring-slate-200/80'
-                  : 'text-slate-500 hover:text-slate-900'
+                chartType === "line"
+                  ? "bg-white text-emerald-700 shadow-xs ring-1 ring-slate-200/80"
+                  : "text-slate-500 hover:text-slate-900"
               }`}
               title="Line Chart (Trend line & points)"
             >
@@ -304,7 +317,9 @@ const RevenueChart = ({
               style={{ backgroundColor: activeConfig.stroke }}
             />
             <span className="text-slate-400 font-medium">Selected:</span>
-            <span className="text-slate-900 font-extrabold">{activeConfig.label}</span>
+            <span className="text-slate-900 font-extrabold">
+              {activeConfig.label}
+            </span>
           </div>
         </div>
       </div>
@@ -317,10 +332,11 @@ const RevenueChart = ({
           </div>
         ) : (
           <ResponsiveContainer width="100%" height="100%">
-            {chartType === 'bar' ? (
+            {chartType === "bar" ? (
               <BarChart
                 data={formattedData}
                 margin={{ top: 10, right: 10, left: -10, bottom: 0 }}
+                accessibilityLayer={false}
               >
                 <CartesianGrid
                   strokeDasharray="3 3"
@@ -330,14 +346,14 @@ const RevenueChart = ({
                 <XAxis
                   dataKey="displayDate"
                   tickLine={false}
-                  axisLine={{ stroke: '#e2e8f0' }}
-                  tick={{ fill: '#64748b', fontSize: 10 }}
+                  axisLine={{ stroke: "#e2e8f0" }}
+                  tick={{ fill: "#64748b", fontSize: 10 }}
                   minTickGap={25}
                 />
                 <YAxis
                   tickLine={false}
-                  axisLine={{ stroke: '#e2e8f0' }}
-                  tick={{ fill: '#64748b', fontSize: 10 }}
+                  axisLine={{ stroke: "#e2e8f0" }}
+                  tick={{ fill: "#64748b", fontSize: 10 }}
                   width={50}
                   tickFormatter={activeConfig.yAxisFormatter}
                 />
@@ -351,10 +367,11 @@ const RevenueChart = ({
                   radius={[5, 5, 0, 0]}
                 />
               </BarChart>
-            ) : chartType === 'line' ? (
+            ) : chartType === "line" ? (
               <LineChart
                 data={formattedData}
                 margin={{ top: 10, right: 10, left: -10, bottom: 0 }}
+                accessibilityLayer={false}
               >
                 <CartesianGrid
                   strokeDasharray="3 3"
@@ -364,14 +381,14 @@ const RevenueChart = ({
                 <XAxis
                   dataKey="displayDate"
                   tickLine={false}
-                  axisLine={{ stroke: '#e2e8f0' }}
-                  tick={{ fill: '#64748b', fontSize: 10 }}
+                  axisLine={{ stroke: "#e2e8f0" }}
+                  tick={{ fill: "#64748b", fontSize: 10 }}
                   minTickGap={25}
                 />
                 <YAxis
                   tickLine={false}
-                  axisLine={{ stroke: '#e2e8f0' }}
-                  tick={{ fill: '#64748b', fontSize: 10 }}
+                  axisLine={{ stroke: "#e2e8f0" }}
+                  tick={{ fill: "#64748b", fontSize: 10 }}
                   width={50}
                   tickFormatter={activeConfig.yAxisFormatter}
                 />
@@ -388,7 +405,7 @@ const RevenueChart = ({
                   activeDot={{
                     r: 6,
                     fill: activeConfig.stroke,
-                    stroke: '#ffffff',
+                    stroke: "#ffffff",
                     strokeWidth: 2,
                   }}
                 />
@@ -397,6 +414,7 @@ const RevenueChart = ({
               <AreaChart
                 data={formattedData}
                 margin={{ top: 10, right: 10, left: -10, bottom: 0 }}
+                accessibilityLayer={false}
               >
                 <defs>
                   <linearGradient
@@ -426,14 +444,14 @@ const RevenueChart = ({
                 <XAxis
                   dataKey="displayDate"
                   tickLine={false}
-                  axisLine={{ stroke: '#e2e8f0' }}
-                  tick={{ fill: '#64748b', fontSize: 10 }}
+                  axisLine={{ stroke: "#e2e8f0" }}
+                  tick={{ fill: "#64748b", fontSize: 10 }}
                   minTickGap={25}
                 />
                 <YAxis
                   tickLine={false}
-                  axisLine={{ stroke: '#e2e8f0' }}
-                  tick={{ fill: '#64748b', fontSize: 10 }}
+                  axisLine={{ stroke: "#e2e8f0" }}
+                  tick={{ fill: "#64748b", fontSize: 10 }}
                   width={50}
                   tickFormatter={activeConfig.yAxisFormatter}
                 />
@@ -451,7 +469,7 @@ const RevenueChart = ({
                   activeDot={{
                     r: 6,
                     fill: activeConfig.stroke,
-                    stroke: '#ffffff',
+                    stroke: "#ffffff",
                     strokeWidth: 2,
                   }}
                 />
