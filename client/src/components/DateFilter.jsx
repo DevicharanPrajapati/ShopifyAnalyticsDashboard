@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Calendar } from 'lucide-react';
+import { Calendar, Filter, ChevronDown } from 'lucide-react';
 
 const PRESETS = [
   { label: 'Today', value: 'today' },
@@ -17,7 +17,7 @@ const DateFilter = ({ activePreset, startDate, endDate, onFilterChange }) => {
 
   const handlePresetClick = (preset) => {
     if (preset === 'custom') {
-      setShowCustom(true);
+      setShowCustom(!showCustom);
       return;
     }
     setShowCustom(false);
@@ -36,26 +36,26 @@ const DateFilter = ({ activePreset, startDate, endDate, onFilterChange }) => {
   };
 
   return (
-    <div className="bg-white p-3 sm:p-4 rounded-xl border border-slate-200 shadow-xs mb-6">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+    <div className="bg-white p-3 sm:p-4 rounded-2xl border border-slate-200 shadow-xs mb-5 sm:mb-6">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-2.5 sm:gap-3">
         {/* Left Label */}
         <div className="flex items-center space-x-2 text-slate-700">
           <Calendar className="w-4 h-4 text-emerald-600 flex-shrink-0" />
-          <span className="text-xs sm:text-sm font-semibold">Date Range Filter:</span>
+          <span className="text-xs sm:text-sm font-bold text-slate-800">Date Range Filter:</span>
         </div>
 
-        {/* Filter Pills */}
-        <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
+        {/* Filter Pills with Horizontal Touch Scroll on Small Screens */}
+        <div className="flex items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0 scrollbar-none -mx-1 px-1 sm:mx-0 sm:px-0">
           {PRESETS.map((p) => {
             const isActive = activePreset === p.value;
             return (
               <button
                 key={p.value}
                 onClick={() => handlePresetClick(p.value)}
-                className={`px-2.5 sm:px-3 py-1 sm:py-1.5 text-xs font-medium rounded-lg transition-all cursor-pointer ${
+                className={`whitespace-nowrap px-3 py-1.5 text-xs font-semibold rounded-lg transition-all cursor-pointer flex-shrink-0 active:scale-95 ${
                   isActive
                     ? 'bg-emerald-600 text-white shadow-xs'
-                    : 'bg-slate-100 hover:bg-slate-200 text-slate-600'
+                    : 'bg-slate-100 hover:bg-slate-200/80 text-slate-600'
                 }`}
               >
                 {p.label}
@@ -72,32 +72,32 @@ const DateFilter = ({ activePreset, startDate, endDate, onFilterChange }) => {
           className="mt-3 pt-3 border-t border-slate-100 flex flex-col sm:flex-row sm:items-center gap-2.5 sm:gap-3"
         >
           <div className="flex items-center gap-2 w-full sm:w-auto">
-            <label className="text-xs font-medium text-slate-600 w-12 sm:w-auto">From:</label>
+            <span className="text-xs font-semibold text-slate-600 w-12 sm:w-auto">From:</span>
             <input
               type="date"
               value={customStart}
               onChange={(e) => setCustomStart(e.target.value)}
               required
-              className="text-xs px-2.5 py-1.5 border border-slate-300 rounded-md focus:outline-emerald-500 focus:ring-1 focus:ring-emerald-500 bg-white flex-1 sm:flex-initial"
+              className="text-xs px-3 py-2 sm:py-1.5 border border-slate-300 rounded-lg focus:outline-emerald-500 focus:ring-1 focus:ring-emerald-500 bg-white flex-1 sm:flex-initial"
             />
           </div>
 
           <div className="flex items-center gap-2 w-full sm:w-auto">
-            <label className="text-xs font-medium text-slate-600 w-12 sm:w-auto">To:</label>
+            <span className="text-xs font-semibold text-slate-600 w-12 sm:w-auto">To:</span>
             <input
               type="date"
               value={customEnd}
               onChange={(e) => setCustomEnd(e.target.value)}
               required
-              className="text-xs px-2.5 py-1.5 border border-slate-300 rounded-md focus:outline-emerald-500 focus:ring-1 focus:ring-emerald-500 bg-white flex-1 sm:flex-initial"
+              className="text-xs px-3 py-2 sm:py-1.5 border border-slate-300 rounded-lg focus:outline-emerald-500 focus:ring-1 focus:ring-emerald-500 bg-white flex-1 sm:flex-initial"
             />
           </div>
 
           <button
             type="submit"
-            className="w-full sm:w-auto px-4 py-1.5 text-xs font-semibold bg-emerald-600 hover:bg-emerald-700 text-white rounded-md transition-colors cursor-pointer"
+            className="w-full sm:w-auto px-4 py-2 sm:py-1.5 text-xs font-bold bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white rounded-lg transition-all cursor-pointer shadow-xs"
           >
-            Apply Range
+            Apply Custom Range
           </button>
         </form>
       )}

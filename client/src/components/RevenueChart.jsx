@@ -10,11 +10,11 @@ import {
 } from 'recharts';
 import { TrendingUp, DollarSign, ShoppingCart } from 'lucide-react';
 
-const CustomTooltip = ({ active, payload, label, mode }) => {
+const CustomTooltip = ({ active, payload, label }) => {
   if (active && payload && payload.length) {
     const data = payload[0].payload;
     return (
-      <div className="bg-slate-900 text-white p-3 rounded-xl shadow-xl text-xs border border-slate-800">
+      <div className="bg-slate-900 text-white p-2.5 sm:p-3 rounded-xl shadow-xl text-xs border border-slate-800">
         <p className="font-semibold text-slate-300 border-b border-slate-800 pb-1 mb-1.5">{label}</p>
         <p className="flex items-center justify-between gap-4 text-emerald-400 font-bold">
           <span>Revenue:</span>
@@ -33,7 +33,7 @@ const CustomTooltip = ({ active, payload, label, mode }) => {
 const RevenueChart = ({ data = [] }) => {
   const [metric, setMetric] = useState('revenue'); // 'revenue' or 'orders'
 
-  // Format date labels for X-axis (e.g. "Oct 12")
+  // Format date labels for X-axis
   const formattedData = data.map((item) => {
     const dateObj = new Date(item.date);
     const label = !isNaN(dateObj)
@@ -49,20 +49,20 @@ const RevenueChart = ({ data = [] }) => {
   const totalPeriodOrders = data.reduce((sum, item) => sum + (item.orders || 0), 0);
 
   return (
-    <div className="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200 shadow-xs min-w-0">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-5 sm:mb-6">
+    <div className="bg-white p-3.5 sm:p-5 rounded-2xl border border-slate-200 shadow-xs min-w-0 w-full overflow-hidden">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4 sm:mb-6">
         <div>
           <div className="flex items-center space-x-2">
             <TrendingUp className="w-5 h-5 text-emerald-600 flex-shrink-0" />
             <h2 className="text-sm sm:text-base font-bold text-slate-900">Revenue & Sales Over Time</h2>
           </div>
-          <p className="text-xs text-slate-500 mt-1">
+          <p className="text-[11px] sm:text-xs text-slate-500 mt-0.5 sm:mt-1">
             Period Total:{' '}
-            <span className="font-semibold text-slate-800">
+            <span className="font-bold text-slate-800">
               ${totalPeriodRevenue.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
             </span>
             {' • '}
-            <span className="font-semibold text-slate-800">{totalPeriodOrders} orders</span>
+            <span className="font-bold text-slate-800">{totalPeriodOrders} orders</span>
           </p>
         </div>
 
@@ -94,14 +94,14 @@ const RevenueChart = ({ data = [] }) => {
       </div>
 
       {/* Recharts Area Chart */}
-      <div className="w-full h-64 sm:h-80 min-w-0 overflow-hidden">
+      <div className="w-full h-56 sm:h-72 lg:h-80 min-w-0 overflow-hidden">
         {formattedData.length === 0 ? (
-          <div className="w-full h-full flex items-center justify-center text-slate-400 text-sm">
+          <div className="w-full h-full flex items-center justify-center text-slate-400 text-xs sm:text-sm">
             No transaction data available for this range
           </div>
         ) : (
           <ResponsiveContainer width="100%" height="100%">
-            <AreaChart data={formattedData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+            <AreaChart data={formattedData} margin={{ top: 10, right: 10, left: -15, bottom: 0 }}>
               <defs>
                 <linearGradient id="colorRevenue" x1="0" y1="0" x2="0" y2="1">
                   <stop offset="5%" stopColor="#10b981" stopOpacity={0.4} />
@@ -118,15 +118,16 @@ const RevenueChart = ({ data = [] }) => {
                 tickLine={false}
                 axisLine={{ stroke: '#e2e8f0' }}
                 tick={{ fill: '#64748b', fontSize: 10 }}
-                minTickGap={25}
+                minTickGap={28}
               />
               <YAxis
                 tickLine={false}
                 axisLine={{ stroke: '#e2e8f0' }}
                 tick={{ fill: '#64748b', fontSize: 10 }}
-                tickFormatter={(val) => (metric === 'revenue' ? `$${val}` : val)}
+                width={48}
+                tickFormatter={(val) => (metric === 'revenue' ? (val >= 1000 ? `$${(val / 1000).toFixed(0)}k` : `$${val}`) : val)}
               />
-              <Tooltip content={<CustomTooltip mode={metric} />} />
+              <Tooltip content={<CustomTooltip />} />
               {metric === 'revenue' ? (
                 <Area
                   type="monotone"
