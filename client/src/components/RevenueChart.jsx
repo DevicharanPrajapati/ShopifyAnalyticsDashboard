@@ -49,26 +49,28 @@ const RevenueChart = ({ data = [] }) => {
   const totalPeriodOrders = data.reduce((sum, item) => sum + (item.orders || 0), 0);
 
   return (
-    <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
+    <div className="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200 shadow-xs min-w-0">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-5 sm:mb-6">
         <div>
           <div className="flex items-center space-x-2">
-            <TrendingUp className="w-5 h-5 text-emerald-600" />
-            <h2 className="text-base font-bold text-slate-900">Revenue & Sales Over Time</h2>
+            <TrendingUp className="w-5 h-5 text-emerald-600 flex-shrink-0" />
+            <h2 className="text-sm sm:text-base font-bold text-slate-900">Revenue & Sales Over Time</h2>
           </div>
           <p className="text-xs text-slate-500 mt-1">
-            Total in period:{' '}
-            <span className="font-semibold text-slate-800">${totalPeriodRevenue.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+            Period Total:{' '}
+            <span className="font-semibold text-slate-800">
+              ${totalPeriodRevenue.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+            </span>
             {' • '}
             <span className="font-semibold text-slate-800">{totalPeriodOrders} orders</span>
           </p>
         </div>
 
         {/* View Toggle */}
-        <div className="inline-flex bg-slate-100 p-1 rounded-xl">
+        <div className="inline-flex bg-slate-100 p-1 rounded-xl self-start sm:self-auto">
           <button
             onClick={() => setMetric('revenue')}
-            className={`flex items-center space-x-1.5 px-3 py-1 text-xs font-semibold rounded-lg transition-all cursor-pointer ${
+            className={`flex items-center space-x-1 px-2.5 sm:px-3 py-1 text-xs font-semibold rounded-lg transition-all cursor-pointer ${
               metric === 'revenue'
                 ? 'bg-white text-slate-900 shadow-xs'
                 : 'text-slate-500 hover:text-slate-900'
@@ -79,7 +81,7 @@ const RevenueChart = ({ data = [] }) => {
           </button>
           <button
             onClick={() => setMetric('orders')}
-            className={`flex items-center space-x-1.5 px-3 py-1 text-xs font-semibold rounded-lg transition-all cursor-pointer ${
+            className={`flex items-center space-x-1 px-2.5 sm:px-3 py-1 text-xs font-semibold rounded-lg transition-all cursor-pointer ${
               metric === 'orders'
                 ? 'bg-white text-slate-900 shadow-xs'
                 : 'text-slate-500 hover:text-slate-900'
@@ -92,14 +94,14 @@ const RevenueChart = ({ data = [] }) => {
       </div>
 
       {/* Recharts Area Chart */}
-      <div className="w-full h-72 sm:h-80">
+      <div className="w-full h-64 sm:h-80 min-w-0 overflow-hidden">
         {formattedData.length === 0 ? (
           <div className="w-full h-full flex items-center justify-center text-slate-400 text-sm">
             No transaction data available for this range
           </div>
         ) : (
           <ResponsiveContainer width="100%" height="100%">
-            <AreaChart data={formattedData} margin={{ top: 10, right: 10, left: -15, bottom: 0 }}>
+            <AreaChart data={formattedData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
               <defs>
                 <linearGradient id="colorRevenue" x1="0" y1="0" x2="0" y2="1">
                   <stop offset="5%" stopColor="#10b981" stopOpacity={0.4} />
@@ -115,13 +117,13 @@ const RevenueChart = ({ data = [] }) => {
                 dataKey="displayDate"
                 tickLine={false}
                 axisLine={{ stroke: '#e2e8f0' }}
-                tick={{ fill: '#64748b', fontSize: 11 }}
-                minTickGap={20}
+                tick={{ fill: '#64748b', fontSize: 10 }}
+                minTickGap={25}
               />
               <YAxis
                 tickLine={false}
                 axisLine={{ stroke: '#e2e8f0' }}
-                tick={{ fill: '#64748b', fontSize: 11 }}
+                tick={{ fill: '#64748b', fontSize: 10 }}
                 tickFormatter={(val) => (metric === 'revenue' ? `$${val}` : val)}
               />
               <Tooltip content={<CustomTooltip mode={metric} />} />
@@ -133,7 +135,7 @@ const RevenueChart = ({ data = [] }) => {
                   strokeWidth={2.5}
                   fillOpacity={1}
                   fill="url(#colorRevenue)"
-                  activeDot={{ r: 6, fill: '#10b981', stroke: '#ffffff', strokeWidth: 2 }}
+                  activeDot={{ r: 5, fill: '#10b981', stroke: '#ffffff', strokeWidth: 2 }}
                 />
               ) : (
                 <Area
@@ -143,7 +145,7 @@ const RevenueChart = ({ data = [] }) => {
                   strokeWidth={2.5}
                   fillOpacity={1}
                   fill="url(#colorOrders)"
-                  activeDot={{ r: 6, fill: '#0ea5e9', stroke: '#ffffff', strokeWidth: 2 }}
+                  activeDot={{ r: 5, fill: '#0ea5e9', stroke: '#ffffff', strokeWidth: 2 }}
                 />
               )}
             </AreaChart>

@@ -27,14 +27,14 @@ const OrderStatusChart = ({ data = [] }) => {
   const totalOrders = data.reduce((sum, item) => sum + (item.count || 0), 0);
 
   return (
-    <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs h-full flex flex-col justify-between">
+    <div className="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200 shadow-xs h-full flex flex-col justify-between min-w-0">
       <div>
         <div className="flex items-center space-x-2 mb-4">
-          <PieIcon className="w-5 h-5 text-indigo-600" />
-          <h2 className="text-base font-bold text-slate-900">Order Payment Status</h2>
+          <PieIcon className="w-5 h-5 text-indigo-600 flex-shrink-0" />
+          <h2 className="text-sm sm:text-base font-bold text-slate-900">Order Payment Status</h2>
         </div>
 
-        <div className="w-full h-48 relative">
+        <div className="w-full h-44 sm:h-48 relative min-w-0 overflow-hidden">
           {data.length === 0 ? (
             <div className="w-full h-full flex items-center justify-center text-slate-400 text-xs">
               No orders found
@@ -50,8 +50,8 @@ const OrderStatusChart = ({ data = [] }) => {
                     nameKey="status"
                     cx="50%"
                     cy="50%"
-                    innerRadius={52}
-                    outerRadius={75}
+                    innerRadius={48}
+                    outerRadius={70}
                     paddingAngle={3}
                   >
                     {data.map((entry, index) => (
@@ -64,15 +64,15 @@ const OrderStatusChart = ({ data = [] }) => {
                 </PieChart>
               </ResponsiveContainer>
               <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-                <span className="text-xl font-bold text-slate-900">{totalOrders}</span>
-                <span className="text-[11px] text-slate-400 font-medium">Orders</span>
+                <span className="text-lg sm:text-xl font-bold text-slate-900">{totalOrders}</span>
+                <span className="text-[10px] sm:text-[11px] text-slate-400 font-medium">Orders</span>
               </div>
             </>
           )}
         </div>
 
         {/* Legend */}
-        <div className="flex flex-wrap items-center justify-center gap-4 mt-2">
+        <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-4 mt-2">
           {data.map((item) => (
             <div key={item.status} className="flex items-center space-x-1.5 text-xs">
               <span

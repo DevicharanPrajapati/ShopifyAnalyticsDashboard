@@ -46,7 +46,7 @@ export default function App() {
   const { current, percentageChanges } = overview;
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900 pb-16">
+    <div className="min-h-screen bg-slate-50 text-slate-900 pb-16 overflow-x-hidden w-full">
       {/* Top Navigation */}
       <Navbar onRefresh={loadData} loading={loading} />
 

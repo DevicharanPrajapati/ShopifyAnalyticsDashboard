@@ -3,19 +3,19 @@ import { ShoppingCart, CheckCircle2, Clock, RotateCcw } from 'lucide-react';
 
 const RecentOrdersTable = ({ orders = [] }) => {
   return (
-    <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs">
+    <div className="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200 shadow-xs min-w-0">
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center space-x-2">
-          <ShoppingCart className="w-5 h-5 text-emerald-600" />
-          <h2 className="text-base font-bold text-slate-900">Recent Store Orders</h2>
+          <ShoppingCart className="w-5 h-5 text-emerald-600 flex-shrink-0" />
+          <h2 className="text-sm sm:text-base font-bold text-slate-900">Recent Store Orders</h2>
         </div>
         <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-slate-100 text-slate-600">
-          Latest {orders.length} transactions
+          Latest {orders.length}
         </span>
       </div>
 
-      <div className="overflow-x-auto">
-        <table className="w-full text-left text-xs border-collapse">
+      <div className="overflow-x-auto -mx-4 sm:mx-0 px-4 sm:px-0">
+        <table className="w-full min-w-[580px] text-left text-xs border-collapse">
           <thead>
             <tr className="border-b border-slate-100 text-slate-400 font-semibold uppercase tracking-wider">
               <th className="pb-3 pr-4">Order</th>
@@ -44,17 +44,21 @@ const RecentOrdersTable = ({ orders = [] }) => {
 
                 return (
                   <tr key={order._id || order.orderNumber} className="hover:bg-slate-50/70 transition-colors">
-                    <td className="py-3.5 pr-4 font-bold text-slate-900">
+                    <td className="py-3.5 pr-4 font-bold text-slate-900 whitespace-nowrap">
                       {order.orderNumber}
                     </td>
                     <td className="py-3.5 px-4">
-                      <p className="font-semibold text-slate-800">{order.customer?.name || 'Guest Customer'}</p>
-                      <p className="text-[11px] text-slate-400">{order.customer?.email || 'N/A'}</p>
+                      <p className="font-semibold text-slate-800 truncate max-w-[130px] sm:max-w-[180px]">
+                        {order.customer?.name || 'Guest Customer'}
+                      </p>
+                      <p className="text-[11px] text-slate-400 truncate max-w-[130px] sm:max-w-[180px]">
+                        {order.customer?.email || 'N/A'}
+                      </p>
                     </td>
                     <td className="py-3.5 px-4 text-slate-500 whitespace-nowrap">
                       {dateStr}
                     </td>
-                    <td className="py-3.5 px-4 text-slate-600">
+                    <td className="py-3.5 px-4 text-slate-600 whitespace-nowrap">
                       {order.items?.length || 1} {order.items?.length === 1 ? 'item' : 'items'}
                     </td>
                     <td className="py-3.5 px-4 whitespace-nowrap">

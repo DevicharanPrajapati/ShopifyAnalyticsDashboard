@@ -105,6 +105,8 @@ const CUSTOMERS = [
 
 const seedDatabase = async () => {
   try {
+    const DAYS_TO_SEED = process.env.DAYS ? parseInt(process.env.DAYS, 10) : 30;
+
     console.log('Connecting to database...');
     const conn = await connectDB();
 
@@ -127,19 +129,18 @@ const seedDatabase = async () => {
     const trafficList = [];
     let orderCounter = 1001;
 
-    console.log('Generating realistic 90-day order & traffic history...');
+    console.log(`Generating realistic ${DAYS_TO_SEED}-day order & traffic history...`);
 
-    for (let dayOffset = 89; dayOffset >= 0; dayOffset--) {
+    for (let dayOffset = DAYS_TO_SEED - 1; dayOffset >= 0; dayOffset--) {
       const orderDate = new Date(now);
       orderDate.setDate(now.getDate() - dayOffset);
 
-      // Daily orders count (between 1 and 6 orders daily, with weekend boosts)
+      // Daily orders count (between 2 and 7 orders daily, with weekend boosts)
       const isWeekend = orderDate.getDay() === 0 || orderDate.getDay() === 6;
       const baseOrders = isWeekend ? 4 : 2;
       const dailyOrdersCount = Math.floor(baseOrders + Math.random() * 4);
 
-      // Generate daily visitor traffic (between 70 and 160 visitors per day)
-      // Realistic Shopify conversion rate is around 2% to 4%
+      // Realistic Shopify conversion rate between 2.5% and 4.2%
       const dailyVisitors = Math.floor(dailyOrdersCount * (25 + Math.random() * 15));
       const dailySessions = Math.floor(dailyVisitors * (1.2 + Math.random() * 0.3));
 
@@ -176,7 +177,7 @@ const seedDatabase = async () => {
         const shippingFee = subtotal > 150 ? 0 : 12;
         const totalAmount = Number((subtotal + tax + shippingFee).toFixed(2));
 
-        // 90% paid, 5% pending, 5% refunded
+        // ~90% paid, 5% pending, 5% refunded
         const randStatus = Math.random();
         const financialStatus = randStatus > 0.1 ? 'paid' : randStatus > 0.05 ? 'pending' : 'refunded';
 
@@ -195,13 +196,13 @@ const seedDatabase = async () => {
       }
     }
 
-    console.log(`Inserting ${orders.length} orders...`);
+    console.log(`Inserting ${orders.length} orders across ${DAYS_TO_SEED} days...`);
     await Order.insertMany(orders);
 
-    console.log(`Inserting ${trafficList.length} traffic entries...`);
+    console.log(`Inserting ${trafficList.length} traffic entries across ${DAYS_TO_SEED} days...`);
     await VisitorTraffic.insertMany(trafficList);
 
-    console.log('🎉 Database seeding completed successfully!');
+    console.log(`🎉 Database seeding of ${DAYS_TO_SEED} days completed successfully!`);
     process.exit(0);
   } catch (error) {
     console.error('Error while seeding database:', error);

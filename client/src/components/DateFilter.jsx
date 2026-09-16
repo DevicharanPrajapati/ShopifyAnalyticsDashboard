@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
-import { Calendar, ChevronDown, Check } from 'lucide-react';
+import { Calendar } from 'lucide-react';
 
 const PRESETS = [
   { label: 'Today', value: 'today' },
-  { label: 'Last 7 Days', value: '7d' },
-  { label: 'Last 30 Days', value: '30d' },
-  { label: 'Last 90 Days', value: '90d' },
-  { label: 'Last 1 Year', value: '1y' },
-  { label: 'Custom Range', value: 'custom' },
+  { label: '7 Days', value: '7d' },
+  { label: '30 Days', value: '30d' },
+  { label: '90 Days', value: '90d' },
+  { label: '1 Year', value: '1y' },
+  { label: 'Custom', value: 'custom' },
 ];
 
 const DateFilter = ({ activePreset, startDate, endDate, onFilterChange }) => {
@@ -37,11 +37,11 @@ const DateFilter = ({ activePreset, startDate, endDate, onFilterChange }) => {
 
   return (
     <div className="bg-white p-3 sm:p-4 rounded-xl border border-slate-200 shadow-xs mb-6">
-      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         {/* Left Label */}
         <div className="flex items-center space-x-2 text-slate-700">
-          <Calendar className="w-4 h-4 text-emerald-600" />
-          <span className="text-sm font-semibold">Date Range Filter:</span>
+          <Calendar className="w-4 h-4 text-emerald-600 flex-shrink-0" />
+          <span className="text-xs sm:text-sm font-semibold">Date Range Filter:</span>
         </div>
 
         {/* Filter Pills */}
@@ -52,7 +52,7 @@ const DateFilter = ({ activePreset, startDate, endDate, onFilterChange }) => {
               <button
                 key={p.value}
                 onClick={() => handlePresetClick(p.value)}
-                className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-all cursor-pointer ${
+                className={`px-2.5 sm:px-3 py-1 sm:py-1.5 text-xs font-medium rounded-lg transition-all cursor-pointer ${
                   isActive
                     ? 'bg-emerald-600 text-white shadow-xs'
                     : 'bg-slate-100 hover:bg-slate-200 text-slate-600'
@@ -69,33 +69,33 @@ const DateFilter = ({ activePreset, startDate, endDate, onFilterChange }) => {
       {showCustom && (
         <form
           onSubmit={handleCustomSubmit}
-          className="mt-3 pt-3 border-t border-slate-100 flex flex-wrap items-center gap-3"
+          className="mt-3 pt-3 border-t border-slate-100 flex flex-col sm:flex-row sm:items-center gap-2.5 sm:gap-3"
         >
-          <div className="flex items-center gap-2">
-            <label className="text-xs font-medium text-slate-600">From:</label>
+          <div className="flex items-center gap-2 w-full sm:w-auto">
+            <label className="text-xs font-medium text-slate-600 w-12 sm:w-auto">From:</label>
             <input
               type="date"
               value={customStart}
               onChange={(e) => setCustomStart(e.target.value)}
               required
-              className="text-xs px-2.5 py-1.5 border border-slate-300 rounded-md focus:outline-emerald-500 focus:ring-1 focus:ring-emerald-500 bg-white"
+              className="text-xs px-2.5 py-1.5 border border-slate-300 rounded-md focus:outline-emerald-500 focus:ring-1 focus:ring-emerald-500 bg-white flex-1 sm:flex-initial"
             />
           </div>
 
-          <div className="flex items-center gap-2">
-            <label className="text-xs font-medium text-slate-600">To:</label>
+          <div className="flex items-center gap-2 w-full sm:w-auto">
+            <label className="text-xs font-medium text-slate-600 w-12 sm:w-auto">To:</label>
             <input
               type="date"
               value={customEnd}
               onChange={(e) => setCustomEnd(e.target.value)}
               required
-              className="text-xs px-2.5 py-1.5 border border-slate-300 rounded-md focus:outline-emerald-500 focus:ring-1 focus:ring-emerald-500 bg-white"
+              className="text-xs px-2.5 py-1.5 border border-slate-300 rounded-md focus:outline-emerald-500 focus:ring-1 focus:ring-emerald-500 bg-white flex-1 sm:flex-initial"
             />
           </div>
 
           <button
             type="submit"
-            className="px-3 py-1.5 text-xs font-semibold bg-emerald-600 hover:bg-emerald-700 text-white rounded-md transition-colors cursor-pointer"
+            className="w-full sm:w-auto px-4 py-1.5 text-xs font-semibold bg-emerald-600 hover:bg-emerald-700 text-white rounded-md transition-colors cursor-pointer"
           >
             Apply Range
           </button>
