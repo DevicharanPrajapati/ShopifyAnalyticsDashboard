@@ -43,16 +43,20 @@ const customerSchema = new mongoose.Schema({
   city: String,
   country: {
     type: String,
-    default: 'United States',
+    default: 'India',
   },
 });
 
 const orderSchema = new mongoose.Schema(
   {
+    storeId: {
+      type: String,
+      default: 'store-1',
+      index: true,
+    },
     orderNumber: {
       type: String,
       required: true,
-      unique: true,
       index: true,
     },
     customer: customerSchema,
@@ -101,8 +105,8 @@ const orderSchema = new mongoose.Schema(
   }
 );
 
-// Compound index for fast date-range queries
-orderSchema.index({ orderDate: 1, financialStatus: 1 });
+// Compound index for fast store & date-range queries
+orderSchema.index({ storeId: 1, orderDate: 1, financialStatus: 1 });
 
 const Order = mongoose.model('Order', orderSchema);
 

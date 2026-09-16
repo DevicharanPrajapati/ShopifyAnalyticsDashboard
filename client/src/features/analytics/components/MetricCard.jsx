@@ -6,23 +6,31 @@ const MetricCard = ({
   value,
   change,
   icon: Icon,
-  prefix = '',
+  prefix = '₹',
   suffix = '',
   subtext = 'vs. previous period',
-  gradient = 'from-indigo-500 to-violet-600',
 }) => {
   const isPositive = change > 0;
   const isNegative = change < 0;
   const isZero = change === 0 || change === undefined;
 
+  // Format value with commas
+  const formattedValue =
+    typeof value === 'number'
+      ? value.toLocaleString('en-IN', {
+          maximumFractionDigits: 2,
+          minimumFractionDigits: value % 1 === 0 ? 0 : 2,
+        })
+      : value;
+
   return (
-    <div className="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200/90 shadow-2xs hover:shadow-md transition-all duration-200 min-w-0 group">
+    <div className="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200 shadow-xs hover:shadow-md transition-all duration-200 min-w-0">
       <div className="flex items-center justify-between">
         <span className="text-[11px] sm:text-xs font-bold text-slate-500 uppercase tracking-wider truncate pr-2">
           {title}
         </span>
         {Icon && (
-          <div className={`w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-tr ${gradient} flex items-center justify-center text-white shadow-md shadow-indigo-500/15 flex-shrink-0 group-hover:scale-105 transition-transform`}>
+          <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-emerald-50 border border-emerald-100 flex items-center justify-center text-emerald-600 flex-shrink-0">
             <Icon className="w-4 h-4 sm:w-5 sm:h-5" />
           </div>
         )}
@@ -31,7 +39,7 @@ const MetricCard = ({
       <div className="mt-3">
         <h3 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight truncate">
           {prefix}
-          {typeof value === 'number' ? value.toLocaleString('en-US') : value}
+          {formattedValue}
           {suffix}
         </h3>
       </div>

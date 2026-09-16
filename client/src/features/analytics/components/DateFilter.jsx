@@ -36,11 +36,11 @@ const DateFilter = ({ activePreset, startDate, endDate, onFilterChange }) => {
   };
 
   return (
-    <div className="bg-white p-3.5 sm:p-4 rounded-2xl border border-slate-200/90 shadow-2xs mb-5 sm:mb-6">
+    <div className="bg-white p-3.5 sm:p-4 rounded-2xl border border-slate-200 shadow-xs mb-5 sm:mb-6">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-2.5 sm:gap-3">
         {/* Left Label */}
         <div className="flex items-center space-x-2 text-slate-700">
-          <Calendar className="w-4 h-4 text-indigo-600 flex-shrink-0" />
+          <Calendar className="w-4 h-4 text-emerald-600 flex-shrink-0" />
           <span className="text-xs sm:text-sm font-bold text-slate-800">Date Range Filter:</span>
         </div>
 
@@ -54,7 +54,7 @@ const DateFilter = ({ activePreset, startDate, endDate, onFilterChange }) => {
                 onClick={() => handlePresetClick(p.value)}
                 className={`whitespace-nowrap px-3 py-1.5 text-xs font-semibold rounded-xl transition-all cursor-pointer flex-shrink-0 active:scale-95 ${
                   isActive
-                    ? 'bg-indigo-600 text-white shadow-xs shadow-indigo-600/30'
+                    ? 'bg-emerald-600 text-white shadow-xs'
                     : 'bg-slate-100 hover:bg-slate-200/80 text-slate-600'
                 }`}
               >
@@ -78,7 +78,7 @@ const DateFilter = ({ activePreset, startDate, endDate, onFilterChange }) => {
               value={customStart}
               onChange={(e) => setCustomStart(e.target.value)}
               required
-              className="text-xs px-3 py-2 sm:py-1.5 border border-slate-300 rounded-xl focus:outline-indigo-500 focus:ring-1 focus:ring-indigo-500 bg-white flex-1 sm:flex-initial"
+              className="text-xs px-3 py-2 sm:py-1.5 border border-slate-300 rounded-xl focus:outline-emerald-500 focus:ring-1 focus:ring-emerald-500 bg-white flex-1 sm:flex-initial"
             />
           </div>
 
@@ -89,13 +89,13 @@ const DateFilter = ({ activePreset, startDate, endDate, onFilterChange }) => {
               value={customEnd}
               onChange={(e) => setCustomEnd(e.target.value)}
               required
-              className="text-xs px-3 py-2 sm:py-1.5 border border-slate-300 rounded-xl focus:outline-indigo-500 focus:ring-1 focus:ring-indigo-500 bg-white flex-1 sm:flex-initial"
+              className="text-xs px-3 py-2 sm:py-1.5 border border-slate-300 rounded-xl focus:outline-emerald-500 focus:ring-1 focus:ring-emerald-500 bg-white flex-1 sm:flex-initial"
             />
           </div>
 
           <button
             type="submit"
-            className="w-full sm:w-auto px-4 py-2 sm:py-1.5 text-xs font-bold bg-indigo-600 hover:bg-indigo-700 active:scale-95 text-white rounded-xl transition-all cursor-pointer shadow-xs shadow-indigo-600/20"
+            className="w-full sm:w-auto px-4 py-2 sm:py-1.5 text-xs font-bold bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white rounded-xl transition-all cursor-pointer shadow-xs"
           >
             Apply Range
           </button>

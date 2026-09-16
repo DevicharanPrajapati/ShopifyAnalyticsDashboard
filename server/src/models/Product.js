@@ -2,6 +2,11 @@ import mongoose from 'mongoose';
 
 const productSchema = new mongoose.Schema(
   {
+    storeId: {
+      type: String,
+      default: 'store-1',
+      index: true,
+    },
     title: {
       type: String,
       required: true,
@@ -24,7 +29,6 @@ const productSchema = new mongoose.Schema(
     sku: {
       type: String,
       required: true,
-      unique: true,
       trim: true,
     },
     category: {
@@ -52,7 +56,7 @@ const productSchema = new mongoose.Schema(
   }
 );
 
-productSchema.index({ title: 'text', category: 'text' });
+productSchema.index({ storeId: 1, title: 'text', category: 'text' });
 
 const Product = mongoose.model('Product', productSchema);
 

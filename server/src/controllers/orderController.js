@@ -2,8 +2,8 @@ import Order from '../models/Order.js';
 
 export const getOrders = async (req, res, next) => {
   try {
-    const { status, search, page = 1, limit = 20 } = req.query;
-    const filter = {};
+    const { status, search, page = 1, limit = 20, storeId = 'store-1' } = req.query;
+    const filter = { storeId };
 
     if (status) {
       filter.financialStatus = status;

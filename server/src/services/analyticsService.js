@@ -3,10 +3,11 @@ import VisitorTraffic from '../models/VisitorTraffic.js';
 import { calculatePercentageChange } from '../utils/dateHelper.js';
 
 /**
- * Calculates aggregate stats for a specific date range
+ * Calculates aggregate stats for a specific date range & store
  */
-const getStatsForPeriod = async (start, end) => {
+const getStatsForPeriod = async (start, end, storeId = 'store-1') => {
   const matchFilter = {
+    storeId,
     orderDate: { $gte: start, $lte: end },
     financialStatus: 'paid',
   };
@@ -25,6 +26,7 @@ const getStatsForPeriod = async (start, end) => {
   const [trafficMetrics] = await VisitorTraffic.aggregate([
     {
       $match: {
+        storeId,
         date: { $gte: start, $lte: end },
       },
     },
@@ -39,7 +41,7 @@ const getStatsForPeriod = async (start, end) => {
 
   const totalRevenue = orderMetrics?.totalRevenue ? Number(orderMetrics.totalRevenue.toFixed(2)) : 0;
   const totalOrders = orderMetrics?.totalOrders || 0;
-  const totalVisitors = trafficMetrics?.totalVisitors || Math.max(totalOrders * 32, 100);
+  const totalVisitors = trafficMetrics?.totalVisitors || Math.max(totalOrders * 28, 100);
   const averageOrderValue = totalOrders > 0 ? Number((totalRevenue / totalOrders).toFixed(2)) : 0;
   const conversionRate = totalVisitors > 0 ? Number(((totalOrders / totalVisitors) * 100).toFixed(2)) : 0;
 
@@ -55,9 +57,9 @@ const getStatsForPeriod = async (start, end) => {
 /**
  * Get overview metrics with comparison against previous period
  */
-export const getDashboardOverview = async ({ start, end, prevStart, prevEnd }) => {
-  const current = await getStatsForPeriod(start, end);
-  const previous = await getStatsForPeriod(prevStart, prevEnd);
+export const getDashboardOverview = async ({ start, end, prevStart, prevEnd, storeId = 'store-1' }) => {
+  const current = await getStatsForPeriod(start, end, storeId);
+  const previous = await getStatsForPeriod(prevStart, prevEnd, storeId);
 
   return {
     current,
@@ -74,16 +76,18 @@ export const getDashboardOverview = async ({ start, end, prevStart, prevEnd }) =
       prevStart,
       prevEnd,
     },
+    storeId,
   };
 };
 
 /**
- * Get revenue and orders trend over time (daily)
+ * Get revenue and orders trend over time (daily) for specific store
  */
-export const getRevenueOverTime = async ({ start, end }) => {
+export const getRevenueOverTime = async ({ start, end, storeId = 'store-1' }) => {
   const trend = await Order.aggregate([
     {
       $match: {
+        storeId,
         orderDate: { $gte: start, $lte: end },
         financialStatus: 'paid',
       },
@@ -98,7 +102,6 @@ export const getRevenueOverTime = async ({ start, end }) => {
     { $sort: { _id: 1 } },
   ]);
 
-  // Format into continuous date map
   const trendMap = new Map();
   trend.forEach((item) => {
     trendMap.set(item._id, {
@@ -129,12 +132,13 @@ export const getRevenueOverTime = async ({ start, end }) => {
 };
 
 /**
- * Get top selling products by revenue and quantity
+ * Get top selling products by revenue and quantity for specific store
  */
-export const getTopProducts = async ({ start, end, limit = 5 }) => {
+export const getTopProducts = async ({ start, end, limit = 5, storeId = 'store-1' }) => {
   const topProducts = await Order.aggregate([
     {
       $match: {
+        storeId,
         orderDate: { $gte: start, $lte: end },
         financialStatus: 'paid',
       },
@@ -168,22 +172,23 @@ export const getTopProducts = async ({ start, end, limit = 5 }) => {
 };
 
 /**
- * Get recent orders list
+ * Get recent orders list for specific store
  */
-export const getRecentOrders = async (limit = 10) => {
-  return await Order.find()
+export const getRecentOrders = async (limit = 10, storeId = 'store-1') => {
+  return await Order.find({ storeId })
     .sort({ orderDate: -1 })
     .limit(Number(limit))
-    .select('orderNumber customer totalAmount financialStatus fulfillmentStatus orderDate items');
+    .select('orderNumber customer totalAmount financialStatus fulfillmentStatus orderDate items storeId');
 };
 
 /**
- * Get order status distribution (e.g. for Donut / Pie chart)
+ * Get order status distribution for specific store
  */
-export const getOrderStatusBreakdown = async ({ start, end }) => {
+export const getOrderStatusBreakdown = async ({ start, end, storeId = 'store-1' }) => {
   const breakdown = await Order.aggregate([
     {
       $match: {
+        storeId,
         orderDate: { $gte: start, $lte: end },
       },
     },

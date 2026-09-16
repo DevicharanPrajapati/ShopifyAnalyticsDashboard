@@ -2,10 +2,14 @@ import mongoose from 'mongoose';
 
 const visitorTrafficSchema = new mongoose.Schema(
   {
+    storeId: {
+      type: String,
+      default: 'store-1',
+      index: true,
+    },
     date: {
       type: Date,
       required: true,
-      unique: true,
       index: true,
     },
     visitorsCount: {
@@ -25,6 +29,8 @@ const visitorTrafficSchema = new mongoose.Schema(
     timestamps: true,
   }
 );
+
+visitorTrafficSchema.index({ storeId: 1, date: 1 }, { unique: true });
 
 const VisitorTraffic = mongoose.model('VisitorTraffic', visitorTrafficSchema);
 

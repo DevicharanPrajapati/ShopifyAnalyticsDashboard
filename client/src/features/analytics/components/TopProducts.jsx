@@ -5,14 +5,14 @@ const TopProducts = ({ products = [] }) => {
   const maxRevenue = products.length > 0 ? Math.max(...products.map((p) => p.revenue || 0), 1) : 1;
 
   return (
-    <div className="bg-white p-4 sm:p-6 rounded-2xl border border-slate-200/90 shadow-2xs h-full flex flex-col justify-between min-w-0">
+    <div className="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200 shadow-xs h-full flex flex-col justify-between min-w-0">
       <div>
-        <div className="flex items-center justify-between mb-5">
+        <div className="flex items-center justify-between mb-4">
           <div className="flex items-center space-x-2">
-            <Award className="w-5 h-5 text-indigo-600 flex-shrink-0" />
-            <h2 className="text-base sm:text-lg font-bold text-slate-900">Top Performing Products</h2>
+            <Award className="w-5 h-5 text-amber-500 flex-shrink-0" />
+            <h2 className="text-sm sm:text-base font-bold text-slate-900">Top Products by Revenue</h2>
           </div>
-          <span className="text-xs font-bold px-2.5 py-0.5 rounded-full bg-indigo-50 text-indigo-700 border border-indigo-200/80">
+          <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-slate-100 text-slate-600">
             Top {products.length}
           </span>
         </div>
@@ -23,21 +23,21 @@ const TopProducts = ({ products = [] }) => {
             No product sales found for this period
           </div>
         ) : (
-          <div className="space-y-4">
+          <div className="space-y-3.5 sm:space-y-4">
             {products.map((item, index) => {
               const percentage = Math.round(((item.revenue || 0) / maxRevenue) * 100);
               return (
                 <div key={item._id || index} className="group min-w-0">
-                  <div className="flex items-center space-x-3 mb-1.5 min-w-0">
-                    {/* Rank Badge */}
+                  <div className="flex items-center space-x-2.5 sm:space-x-3 mb-1.5 min-w-0">
+                    {/* Rank Indicator */}
                     <span
-                      className={`w-6 h-6 rounded-lg flex items-center justify-center text-[11px] font-extrabold flex-shrink-0 ${
+                      className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold flex-shrink-0 ${
                         index === 0
-                          ? 'bg-amber-100 text-amber-800 border border-amber-300/60'
+                          ? 'bg-amber-100 text-amber-700'
                           : index === 1
-                          ? 'bg-slate-200 text-slate-800 border border-slate-300/60'
+                          ? 'bg-slate-200 text-slate-700'
                           : index === 2
-                          ? 'bg-amber-700/15 text-amber-900 border border-amber-700/20'
+                          ? 'bg-amber-700/10 text-amber-800'
                           : 'bg-slate-100 text-slate-500'
                       }`}
                     >
@@ -48,12 +48,12 @@ const TopProducts = ({ products = [] }) => {
                     <img
                       src={item.image || 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=100&q=80'}
                       alt={item.title}
-                      className="w-10 h-10 rounded-xl object-cover border border-slate-100 bg-slate-50 flex-shrink-0 shadow-2xs"
+                      className="w-9 h-9 sm:w-10 sm:h-10 rounded-lg object-cover border border-slate-100 bg-slate-50 flex-shrink-0"
                     />
 
                     {/* Title & SKU */}
                     <div className="flex-1 min-w-0">
-                      <p className="text-xs font-bold text-slate-800 truncate group-hover:text-indigo-600 transition-colors">
+                      <p className="text-xs font-semibold text-slate-800 truncate group-hover:text-emerald-600 transition-colors">
                         {item.title}
                       </p>
                       <p className="text-[11px] text-slate-400 truncate">
@@ -61,18 +61,18 @@ const TopProducts = ({ products = [] }) => {
                       </p>
                     </div>
 
-                    {/* Revenue */}
+                    {/* Revenue in INR */}
                     <div className="text-right flex-shrink-0">
-                      <p className="text-xs font-extrabold text-slate-900">
-                        ${(item.revenue || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                      <p className="text-xs font-bold text-slate-900">
+                        ₹{(item.revenue || 0).toLocaleString('en-IN', { maximumFractionDigits: 0 })}
                       </p>
                     </div>
                   </div>
 
-                  {/* Revenue Gradient Progress Bar */}
-                  <div className="w-full bg-slate-100 h-1.5 rounded-full overflow-hidden ml-9 pr-9">
+                  {/* Revenue Bar */}
+                  <div className="w-full bg-slate-100 h-1.5 rounded-full overflow-hidden ml-7 sm:ml-8 pr-7 sm:pr-8">
                     <div
-                      className="bg-gradient-to-r from-indigo-500 to-violet-500 h-full rounded-full transition-all duration-500"
+                      className="bg-emerald-500 h-full rounded-full transition-all duration-500"
                       style={{ width: `${percentage}%` }}
                     ></div>
                   </div>

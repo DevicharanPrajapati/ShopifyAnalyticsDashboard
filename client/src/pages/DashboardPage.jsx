@@ -6,6 +6,7 @@ import {
   Percent,
   TrendingUp,
   AlertCircle,
+  IndianRupee,
 } from 'lucide-react';
 import DateFilter from '../features/analytics/components/DateFilter';
 import MetricCard from '../features/analytics/components/MetricCard';
@@ -25,17 +26,21 @@ const DashboardPage = () => {
     recentOrders,
     statusBreakdown,
     dateFilter,
+    activeStore,
+    availableStores,
     loading,
     error,
   } = useSelector((state) => state.analytics);
 
+  const currentStore = availableStores.find((s) => s.id === activeStore) || availableStores[0];
+
   const loadData = () => {
-    dispatch(fetchDashboardData(dateFilter));
+    dispatch(fetchDashboardData({ ...dateFilter, storeId: activeStore }));
   };
 
   useEffect(() => {
     loadData();
-  }, [dispatch, dateFilter.preset, dateFilter.startDate, dateFilter.endDate]);
+  }, [dispatch, dateFilter.preset, dateFilter.startDate, dateFilter.endDate, activeStore]);
 
   const handleFilterChange = (newFilter) => {
     dispatch(setDateFilter(newFilter));
@@ -44,7 +49,7 @@ const DashboardPage = () => {
   const { current, percentageChanges } = overview;
 
   return (
-    <div className="space-y-6 animate-fade-in">
+    <div className="space-y-6">
       {/* Page Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
         <div>
@@ -52,7 +57,7 @@ const DashboardPage = () => {
             Store Performance
           </h1>
           <p className="text-xs sm:text-sm text-slate-500 mt-1">
-            Real-time analytics, revenue trends, and customer transaction KPIs
+            Real-time analytics for <span className="font-bold text-slate-700">{currentStore.name}</span> ({currentStore.owner})
           </p>
         </div>
       </div>
@@ -88,44 +93,42 @@ const DashboardPage = () => {
         <SkeletonLoader />
       ) : (
         <div className="space-y-6">
-          {/* 4 Core KPI Cards with Indigo & Vibrant Accents */}
+          {/* 4 Core Shopify KPI Cards in Indian Rupees (₹) */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
             <MetricCard
               title="Total Revenue"
               value={current.totalRevenue}
-              prefix="$"
+              prefix="₹"
               change={percentageChanges.totalRevenue}
-              icon={DollarSign}
-              gradient="from-indigo-600 to-violet-600"
+              icon={IndianRupee}
               subtext="vs. previous period"
             />
 
             <MetricCard
               title="Total Orders"
               value={current.totalOrders}
+              prefix=""
               change={percentageChanges.totalOrders}
               icon={ShoppingCart}
-              gradient="from-cyan-500 to-blue-600"
               subtext="vs. previous period"
             />
 
             <MetricCard
               title="Conversion Rate"
               value={current.conversionRate}
+              prefix=""
               suffix="%"
               change={percentageChanges.conversionRate}
               icon={Percent}
-              gradient="from-emerald-500 to-teal-600"
               subtext="orders / visitors"
             />
 
             <MetricCard
               title="Average Order Value"
               value={current.averageOrderValue}
-              prefix="$"
+              prefix="₹"
               change={percentageChanges.averageOrderValue}
               icon={TrendingUp}
-              gradient="from-amber-500 to-orange-600"
               subtext="revenue / orders"
             />
           </div>

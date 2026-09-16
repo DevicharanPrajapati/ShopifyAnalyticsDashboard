@@ -1,9 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { Package, Search, Tag, RefreshCw, AlertCircle, Layers } from 'lucide-react';
+import { useSelector } from 'react-redux';
+import { Package, Search, RefreshCw, AlertCircle } from 'lucide-react';
 import { productsAPI } from '../services/api';
 import Badge from '../components/common/Badge';
 
 const ProductsPage = () => {
+  const { activeStore, availableStores } = useSelector((state) => state.analytics);
+  const currentStore = availableStores.find((s) => s.id === activeStore) || availableStores[0];
+
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -18,6 +22,7 @@ const ProductsPage = () => {
         search: searchQuery || undefined,
         category: selectedCategory || undefined,
         limit: 50,
+        storeId: activeStore,
       });
       if (res.data.success) {
         setProducts(res.data.data.products);
@@ -31,17 +36,17 @@ const ProductsPage = () => {
 
   useEffect(() => {
     fetchProducts();
-  }, [selectedCategory]);
+  }, [selectedCategory, activeStore]);
 
   const handleSearch = (e) => {
     e.preventDefault();
     fetchProducts();
   };
 
-  const categories = ['', 'Electronics', 'Accessories', 'Apparel', 'Footwear', 'Home & Kitchen', 'Bags & Luggage'];
+  const categories = ['', 'Electronics', 'Accessories', 'Apparel', 'Footwear', 'Home & Kitchen', 'Bags'];
 
   return (
-    <div className="space-y-6 animate-fade-in">
+    <div className="space-y-6">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
@@ -49,7 +54,7 @@ const ProductsPage = () => {
             Products Catalog
           </h1>
           <p className="text-xs sm:text-sm text-slate-500 mt-1">
-            Browse inventory, pricing margins, and catalog items
+            Inventory & pricing for <span className="font-bold text-slate-700">{currentStore.name}</span> ({currentStore.owner})
           </p>
         </div>
 
@@ -58,13 +63,13 @@ const ProductsPage = () => {
           disabled={loading}
           className="inline-flex items-center self-start sm:self-auto px-3.5 py-2 text-xs font-bold text-slate-700 bg-white border border-slate-200 hover:bg-slate-50 active:scale-95 rounded-xl transition-all cursor-pointer shadow-2xs disabled:opacity-50"
         >
-          <RefreshCw className={`w-3.5 h-3.5 mr-1.5 text-slate-600 ${loading ? 'animate-spin text-indigo-600' : ''}`} />
+          <RefreshCw className={`w-3.5 h-3.5 mr-1.5 text-slate-600 ${loading ? 'animate-spin text-emerald-600' : ''}`} />
           <span>Refresh</span>
         </button>
       </div>
 
       {/* Filters & Search */}
-      <div className="bg-white p-4 rounded-2xl border border-slate-200/90 shadow-2xs flex flex-col md:flex-row items-center justify-between gap-3">
+      <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-2xs flex flex-col md:flex-row items-center justify-between gap-3">
         {/* Category Pills */}
         <div className="flex items-center gap-1.5 overflow-x-auto w-full md:w-auto pb-1 md:pb-0 scrollbar-none">
           {categories.map((cat) => (
@@ -73,7 +78,7 @@ const ProductsPage = () => {
               onClick={() => setSelectedCategory(cat)}
               className={`px-3 py-1.5 text-xs font-bold rounded-xl transition-all cursor-pointer flex-shrink-0 active:scale-95 ${
                 selectedCategory === cat
-                  ? 'bg-indigo-600 text-white shadow-xs shadow-indigo-600/30'
+                  ? 'bg-emerald-600 text-white shadow-xs'
                   : 'bg-slate-100 hover:bg-slate-200/80 text-slate-600'
               }`}
             >
@@ -91,7 +96,7 @@ const ProductsPage = () => {
               placeholder="Search product title..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-9 pr-3 py-1.5 text-xs bg-slate-50 hover:bg-slate-100/70 focus:bg-white border border-slate-200 focus:border-indigo-500 rounded-xl outline-none text-slate-800 placeholder-slate-400 transition-all"
+              className="w-full pl-9 pr-3 py-1.5 text-xs bg-slate-50 hover:bg-slate-100/70 focus:bg-white border border-slate-200 focus:border-emerald-500 rounded-xl outline-none text-slate-800 placeholder-slate-400 transition-all"
             />
           </div>
           <button
@@ -113,13 +118,13 @@ const ProductsPage = () => {
       {/* Products Grid */}
       {loading ? (
         <div className="p-12 text-center text-slate-400 text-xs bg-white rounded-2xl border border-slate-200">
-          <RefreshCw className="w-6 h-6 mx-auto mb-2 animate-spin text-indigo-600" />
+          <RefreshCw className="w-6 h-6 mx-auto mb-2 animate-spin text-emerald-600" />
           Loading products...
         </div>
       ) : products.length === 0 ? (
         <div className="p-12 text-center text-slate-400 text-xs bg-white rounded-2xl border border-slate-200">
           <Package className="w-8 h-8 mx-auto mb-2 opacity-30" />
-          No products found
+          No products found for {currentStore.name}
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
@@ -131,7 +136,7 @@ const ProductsPage = () => {
             return (
               <div
                 key={product._id}
-                className="bg-white rounded-2xl border border-slate-200/90 shadow-2xs hover:shadow-md transition-all overflow-hidden flex flex-col group"
+                className="bg-white rounded-2xl border border-slate-200 shadow-2xs hover:shadow-md transition-all overflow-hidden flex flex-col group"
               >
                 {/* Product Image */}
                 <div className="h-44 w-full bg-slate-100 relative overflow-hidden">
@@ -151,7 +156,7 @@ const ProductsPage = () => {
                 {/* Details */}
                 <div className="p-4 flex-1 flex flex-col justify-between space-y-3">
                   <div>
-                    <h3 className="text-sm font-bold text-slate-900 line-clamp-1 group-hover:text-indigo-600 transition-colors">
+                    <h3 className="text-sm font-bold text-slate-900 line-clamp-1 group-hover:text-emerald-600 transition-colors">
                       {product.title}
                     </h3>
                     <p className="text-[11px] text-slate-400 mt-0.5 font-mono">
@@ -162,7 +167,7 @@ const ProductsPage = () => {
                   <div className="pt-2 border-t border-slate-100 flex items-center justify-between">
                     <div>
                       <p className="text-base font-extrabold text-slate-900">
-                        ${product.price.toFixed(2)}
+                        ₹{product.price.toLocaleString('en-IN')}
                       </p>
                       {margin && (
                         <p className="text-[10px] text-emerald-600 font-bold">

@@ -1,16 +1,12 @@
 import * as analyticsService from '../services/analyticsService.js';
 import { parseDateRange } from '../utils/dateHelper.js';
 
-/**
- * @route   GET /api/analytics/overview
- * @desc    Get dashboard metrics (Total Revenue, Orders, AOV, Conversion Rate)
- */
 export const getOverview = async (req, res, next) => {
   try {
-    const { startDate, endDate, preset } = req.query;
+    const { startDate, endDate, preset, storeId = 'store-1' } = req.query;
     const dateRange = parseDateRange(startDate, endDate, preset);
 
-    const data = await analyticsService.getDashboardOverview(dateRange);
+    const data = await analyticsService.getDashboardOverview({ ...dateRange, storeId });
 
     res.status(200).json({
       success: true,
@@ -21,16 +17,12 @@ export const getOverview = async (req, res, next) => {
   }
 };
 
-/**
- * @route   GET /api/analytics/revenue-trend
- * @desc    Get daily revenue and orders over time
- */
 export const getRevenueTrend = async (req, res, next) => {
   try {
-    const { startDate, endDate, preset } = req.query;
+    const { startDate, endDate, preset, storeId = 'store-1' } = req.query;
     const dateRange = parseDateRange(startDate, endDate, preset);
 
-    const trend = await analyticsService.getRevenueOverTime(dateRange);
+    const trend = await analyticsService.getRevenueOverTime({ ...dateRange, storeId });
 
     res.status(200).json({
       success: true,
@@ -41,18 +33,15 @@ export const getRevenueTrend = async (req, res, next) => {
   }
 };
 
-/**
- * @route   GET /api/analytics/top-products
- * @desc    Get top selling products by revenue
- */
 export const getTopProducts = async (req, res, next) => {
   try {
-    const { startDate, endDate, preset, limit = 5 } = req.query;
+    const { startDate, endDate, preset, limit = 5, storeId = 'store-1' } = req.query;
     const dateRange = parseDateRange(startDate, endDate, preset);
 
     const topProducts = await analyticsService.getTopProducts({
       ...dateRange,
       limit: Number(limit),
+      storeId,
     });
 
     res.status(200).json({
@@ -64,14 +53,10 @@ export const getTopProducts = async (req, res, next) => {
   }
 };
 
-/**
- * @route   GET /api/analytics/recent-orders
- * @desc    Get latest orders
- */
 export const getRecentOrders = async (req, res, next) => {
   try {
-    const { limit = 10 } = req.query;
-    const orders = await analyticsService.getRecentOrders(Number(limit));
+    const { limit = 10, storeId = 'store-1' } = req.query;
+    const orders = await analyticsService.getRecentOrders(Number(limit), storeId);
 
     res.status(200).json({
       success: true,
@@ -82,16 +67,12 @@ export const getRecentOrders = async (req, res, next) => {
   }
 };
 
-/**
- * @route   GET /api/analytics/status-breakdown
- * @desc    Get order status breakdown
- */
 export const getOrderStatusBreakdown = async (req, res, next) => {
   try {
-    const { startDate, endDate, preset } = req.query;
+    const { startDate, endDate, preset, storeId = 'store-1' } = req.query;
     const dateRange = parseDateRange(startDate, endDate, preset);
 
-    const breakdown = await analyticsService.getOrderStatusBreakdown(dateRange);
+    const breakdown = await analyticsService.getOrderStatusBreakdown({ ...dateRange, storeId });
 
     res.status(200).json({
       success: true,
@@ -102,21 +83,17 @@ export const getOrderStatusBreakdown = async (req, res, next) => {
   }
 };
 
-/**
- * @route   GET /api/analytics/dashboard
- * @desc    Get all dashboard analytics data in a single optimized payload
- */
 export const getCompleteDashboard = async (req, res, next) => {
   try {
-    const { startDate, endDate, preset } = req.query;
+    const { startDate, endDate, preset, storeId = 'store-1' } = req.query;
     const dateRange = parseDateRange(startDate, endDate, preset);
 
     const [overview, revenueTrend, topProducts, recentOrders, statusBreakdown] = await Promise.all([
-      analyticsService.getDashboardOverview(dateRange),
-      analyticsService.getRevenueOverTime(dateRange),
-      analyticsService.getTopProducts({ ...dateRange, limit: 5 }),
-      analyticsService.getRecentOrders(10),
-      analyticsService.getOrderStatusBreakdown(dateRange),
+      analyticsService.getDashboardOverview({ ...dateRange, storeId }),
+      analyticsService.getRevenueOverTime({ ...dateRange, storeId }),
+      analyticsService.getTopProducts({ ...dateRange, limit: 5, storeId }),
+      analyticsService.getRecentOrders(10, storeId),
+      analyticsService.getOrderStatusBreakdown({ ...dateRange, storeId }),
     ]);
 
     res.status(200).json({
@@ -127,6 +104,7 @@ export const getCompleteDashboard = async (req, res, next) => {
         topProducts,
         recentOrders,
         statusBreakdown,
+        storeId,
       },
     });
   } catch (error) {

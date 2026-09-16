@@ -1,9 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { ShoppingCart, Search, Filter, ChevronLeft, ChevronRight, RefreshCw, AlertCircle } from 'lucide-react';
+import { useSelector } from 'react-redux';
+import { ShoppingCart, Search, ChevronLeft, ChevronRight, RefreshCw, AlertCircle } from 'lucide-react';
 import { ordersAPI } from '../services/api';
 import Badge from '../components/common/Badge';
 
 const OrdersPage = () => {
+  const { activeStore, availableStores } = useSelector((state) => state.analytics);
+  const currentStore = availableStores.find((s) => s.id === activeStore) || availableStores[0];
+
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -21,6 +25,7 @@ const OrdersPage = () => {
         limit: 15,
         status: statusFilter || undefined,
         search: searchQuery || undefined,
+        storeId: activeStore,
       };
       const res = await ordersAPI.getOrders(params);
       if (res.data.success) {
@@ -36,7 +41,7 @@ const OrdersPage = () => {
 
   useEffect(() => {
     fetchOrders();
-  }, [page, statusFilter]);
+  }, [page, statusFilter, activeStore]);
 
   const handleSearchSubmit = (e) => {
     e.preventDefault();
@@ -45,7 +50,7 @@ const OrdersPage = () => {
   };
 
   return (
-    <div className="space-y-6 animate-fade-in">
+    <div className="space-y-6">
       {/* Page Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
@@ -53,7 +58,7 @@ const OrdersPage = () => {
             Orders Explorer
           </h1>
           <p className="text-xs sm:text-sm text-slate-500 mt-1">
-            Manage customer transactions, track fulfillment, and view details
+            Managing orders for <span className="font-bold text-slate-700">{currentStore.name}</span> ({currentStore.owner})
           </p>
         </div>
 
@@ -62,13 +67,13 @@ const OrdersPage = () => {
           disabled={loading}
           className="inline-flex items-center self-start sm:self-auto px-3.5 py-2 text-xs font-bold text-slate-700 bg-white border border-slate-200 hover:bg-slate-50 active:scale-95 rounded-xl transition-all cursor-pointer shadow-2xs disabled:opacity-50"
         >
-          <RefreshCw className={`w-3.5 h-3.5 mr-1.5 text-slate-600 ${loading ? 'animate-spin text-indigo-600' : ''}`} />
+          <RefreshCw className={`w-3.5 h-3.5 mr-1.5 text-slate-600 ${loading ? 'animate-spin text-emerald-600' : ''}`} />
           <span>Refresh</span>
         </button>
       </div>
 
       {/* Filter and Search Bar */}
-      <div className="bg-white p-4 rounded-2xl border border-slate-200/90 shadow-2xs flex flex-col md:flex-row items-center justify-between gap-3">
+      <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-2xs flex flex-col md:flex-row items-center justify-between gap-3">
         {/* Status Filter Pills */}
         <div className="flex items-center gap-1.5 overflow-x-auto w-full md:w-auto pb-1 md:pb-0 scrollbar-none">
           {[
@@ -85,7 +90,7 @@ const OrdersPage = () => {
               }}
               className={`px-3 py-1.5 text-xs font-bold rounded-xl transition-all cursor-pointer flex-shrink-0 active:scale-95 ${
                 statusFilter === tab.value
-                  ? 'bg-indigo-600 text-white shadow-xs shadow-indigo-600/30'
+                  ? 'bg-emerald-600 text-white shadow-xs'
                   : 'bg-slate-100 hover:bg-slate-200/80 text-slate-600'
               }`}
             >
@@ -103,7 +108,7 @@ const OrdersPage = () => {
               placeholder="Search by ID or customer..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-9 pr-3 py-1.5 text-xs bg-slate-50 hover:bg-slate-100/70 focus:bg-white border border-slate-200 focus:border-indigo-500 rounded-xl outline-none text-slate-800 placeholder-slate-400 transition-all"
+              className="w-full pl-9 pr-3 py-1.5 text-xs bg-slate-50 hover:bg-slate-100/70 focus:bg-white border border-slate-200 focus:border-emerald-500 rounded-xl outline-none text-slate-800 placeholder-slate-400 transition-all"
             />
           </div>
           <button
@@ -123,16 +128,16 @@ const OrdersPage = () => {
       )}
 
       {/* Orders List / Table */}
-      <div className="bg-white rounded-2xl border border-slate-200/90 shadow-2xs overflow-hidden">
+      <div className="bg-white rounded-2xl border border-slate-200 shadow-2xs overflow-hidden">
         {loading ? (
           <div className="p-12 text-center text-slate-400 text-xs">
-            <RefreshCw className="w-6 h-6 mx-auto mb-2 animate-spin text-indigo-600" />
+            <RefreshCw className="w-6 h-6 mx-auto mb-2 animate-spin text-emerald-600" />
             Loading orders...
           </div>
         ) : orders.length === 0 ? (
           <div className="p-12 text-center text-slate-400 text-xs">
             <ShoppingCart className="w-8 h-8 mx-auto mb-2 opacity-30" />
-            No orders match your filter criteria
+            No orders match your filter criteria for {currentStore.name}
           </div>
         ) : (
           <>
@@ -147,7 +152,7 @@ const OrdersPage = () => {
                   <div className="flex items-center justify-between text-xs">
                     <span className="font-semibold text-slate-700">{order.customer?.name}</span>
                     <span className="font-extrabold text-slate-900">
-                      ${(order.totalAmount || 0).toFixed(2)}
+                      ₹{(order.totalAmount || 0).toLocaleString('en-IN', { maximumFractionDigits: 0 })}
                     </span>
                   </div>
                   <div className="flex items-center justify-between text-[10px] text-slate-400">
@@ -201,7 +206,7 @@ const OrdersPage = () => {
                         {order.items?.length || 1} items
                       </td>
                       <td className="py-3.5 px-5 text-right font-extrabold text-slate-900 whitespace-nowrap">
-                        ${(order.totalAmount || 0).toFixed(2)}
+                        ₹{(order.totalAmount || 0).toLocaleString('en-IN', { maximumFractionDigits: 0 })}
                       </td>
                     </tr>
                   ))}

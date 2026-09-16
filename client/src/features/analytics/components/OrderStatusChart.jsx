@@ -13,10 +13,10 @@ const CustomTooltip = ({ active, payload }) => {
   if (active && payload && payload.length) {
     const data = payload[0].payload;
     return (
-      <div className="bg-[#0b0f19] text-white p-2.5 rounded-xl shadow-xl text-xs border border-slate-800">
-        <p className="font-bold capitalize">{data.status} Orders</p>
+      <div className="bg-slate-900 text-white p-2.5 rounded-xl shadow-xl text-xs border border-slate-800">
+        <p className="font-semibold capitalize">{data.status} Orders</p>
         <p className="text-slate-300 mt-0.5">Count: <span className="font-bold text-white">{data.count}</span></p>
-        <p className="text-slate-300">Amount: <span className="font-bold text-indigo-400">${data.totalAmount?.toLocaleString()}</span></p>
+        <p className="text-slate-300">Amount: <span className="font-bold text-emerald-400">₹{data.totalAmount?.toLocaleString('en-IN')}</span></p>
       </div>
     );
   }
@@ -27,11 +27,11 @@ const OrderStatusChart = ({ data = [] }) => {
   const totalOrders = data.reduce((sum, item) => sum + (item.count || 0), 0);
 
   return (
-    <div className="bg-white p-4 sm:p-6 rounded-2xl border border-slate-200/90 shadow-2xs h-full flex flex-col justify-between min-w-0">
+    <div className="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200 shadow-xs h-full flex flex-col justify-between min-w-0">
       <div>
         <div className="flex items-center space-x-2 mb-4">
-          <PieIcon className="w-5 h-5 text-indigo-600 flex-shrink-0" />
-          <h2 className="text-base sm:text-lg font-bold text-slate-900">Payment Breakdown</h2>
+          <PieIcon className="w-5 h-5 text-emerald-600 flex-shrink-0" />
+          <h2 className="text-sm sm:text-base font-bold text-slate-900">Order Payment Status</h2>
         </div>
 
         <div className="w-full h-44 sm:h-48 relative min-w-0 overflow-hidden">
@@ -64,8 +64,8 @@ const OrderStatusChart = ({ data = [] }) => {
                 </PieChart>
               </ResponsiveContainer>
               <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-                <span className="text-lg sm:text-xl font-extrabold text-slate-900">{totalOrders}</span>
-                <span className="text-[10px] sm:text-[11px] text-slate-400 font-semibold">Orders</span>
+                <span className="text-lg sm:text-xl font-bold text-slate-900">{totalOrders}</span>
+                <span className="text-[10px] sm:text-[11px] text-slate-400 font-medium">Orders</span>
               </div>
             </>
           )}
@@ -79,7 +79,7 @@ const OrderStatusChart = ({ data = [] }) => {
                 className="w-2.5 h-2.5 rounded-full"
                 style={{ backgroundColor: STATUS_COLORS[item.status] || '#64748b' }}
               ></span>
-              <span className="capitalize text-slate-700 font-medium">{item.status}</span>
+              <span className="capitalize text-slate-600 font-medium">{item.status}</span>
               <span className="text-slate-400">({item.count})</span>
             </div>
           ))}

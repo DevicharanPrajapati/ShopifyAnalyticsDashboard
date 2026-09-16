@@ -4,13 +4,13 @@ import Badge from '../../../components/common/Badge';
 
 const RecentOrdersTable = ({ orders = [] }) => {
   return (
-    <div className="bg-white p-4 sm:p-6 rounded-2xl border border-slate-200/90 shadow-2xs min-w-0">
+    <div className="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200 shadow-xs min-w-0">
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center space-x-2">
-          <ShoppingCart className="w-5 h-5 text-indigo-600 flex-shrink-0" />
-          <h2 className="text-base sm:text-lg font-bold text-slate-900">Recent Transactions</h2>
+          <ShoppingCart className="w-5 h-5 text-emerald-600 flex-shrink-0" />
+          <h2 className="text-sm sm:text-base font-bold text-slate-900">Recent Store Orders</h2>
         </div>
-        <span className="text-xs font-bold px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-600">
+        <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-slate-100 text-slate-600">
           Latest {orders.length}
         </span>
       </div>
@@ -44,7 +44,7 @@ const RecentOrdersTable = ({ orders = [] }) => {
                       <span className="text-slate-400 block text-[10px]">{order.customer?.email || 'N/A'}</span>
                     </div>
                     <span className="font-extrabold text-slate-900 text-xs">
-                      ${(order.totalAmount || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                      ₹{(order.totalAmount || 0).toLocaleString('en-IN', { maximumFractionDigits: 0 })}
                     </span>
                   </div>
 
@@ -107,7 +107,7 @@ const RecentOrdersTable = ({ orders = [] }) => {
                         </span>
                       </td>
                       <td className="py-3.5 pl-4 text-right font-extrabold text-slate-900 whitespace-nowrap">
-                        ${(order.totalAmount || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                        ₹{(order.totalAmount || 0).toLocaleString('en-IN', { maximumFractionDigits: 0 })}
                       </td>
                     </tr>
                   );

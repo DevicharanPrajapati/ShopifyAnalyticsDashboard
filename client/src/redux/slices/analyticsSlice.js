@@ -4,9 +4,14 @@ import { analyticsAPI } from '../../services/api';
 // Async thunk to fetch complete dashboard analytics
 export const fetchDashboardData = createAsyncThunk(
   'analytics/fetchDashboardData',
-  async (filterParams, { rejectWithValue }) => {
+  async (filterParams, { getState, rejectWithValue }) => {
     try {
-      const response = await analyticsAPI.getDashboardData(filterParams);
+      const state = getState();
+      const storeId = filterParams?.storeId || state.analytics.activeStore || 'store-1';
+      const response = await analyticsAPI.getDashboardData({
+        ...filterParams,
+        storeId,
+      });
       return response.data.data;
     } catch (error) {
       const message = error.response?.data?.message || error.message || 'Failed to fetch analytics data';
@@ -16,6 +21,23 @@ export const fetchDashboardData = createAsyncThunk(
 );
 
 const initialState = {
+  activeStore: 'store-1',
+  availableStores: [
+    {
+      id: 'store-1',
+      name: 'Apex Retailers',
+      owner: 'Devicharan Prajapati',
+      initials: 'DP',
+      role: 'Store Owner',
+    },
+    {
+      id: 'store-2',
+      name: 'Urban Gadgets',
+      owner: 'Rohit Sharma',
+      initials: 'RS',
+      role: 'Store Owner',
+    },
+  ],
   overview: {
     current: {
       totalRevenue: 0,
@@ -55,6 +77,9 @@ const analyticsSlice = createSlice({
   name: 'analytics',
   initialState,
   reducers: {
+    setActiveStore: (state, action) => {
+      state.activeStore = action.payload;
+    },
     setDateFilter: (state, action) => {
       state.dateFilter = { ...state.dateFilter, ...action.payload };
     },
@@ -85,6 +110,6 @@ const analyticsSlice = createSlice({
   },
 });
 
-export const { setDateFilter, clearError } = analyticsSlice.actions;
+export const { setActiveStore, setDateFilter, clearError } = analyticsSlice.actions;
 
 export default analyticsSlice.reducer;

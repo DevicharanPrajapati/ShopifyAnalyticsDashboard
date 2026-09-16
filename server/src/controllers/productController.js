@@ -2,8 +2,8 @@ import Product from '../models/Product.js';
 
 export const getProducts = async (req, res, next) => {
   try {
-    const { category, search, page = 1, limit = 20 } = req.query;
-    const filter = {};
+    const { category, search, page = 1, limit = 50, storeId = 'store-1' } = req.query;
+    const filter = { storeId };
 
     if (category) {
       filter.category = category;

@@ -1,19 +1,19 @@
 import React from 'react';
-import { Heart, Activity, Code2, ExternalLink, ShieldCheck } from 'lucide-react';
+import { Activity, Code2 } from 'lucide-react';
 
 const Footer = () => {
   return (
-    <footer className="mt-auto border-t border-slate-200/80 bg-white text-slate-500 text-xs py-6 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
-        {/* Left: Brand & Copyright */}
+    <footer className="mt-auto border-t border-slate-200 bg-white text-slate-500 text-xs py-5 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-3">
+        {/* Left: Brand & Status */}
         <div className="flex flex-col sm:flex-row items-center gap-2 text-center sm:text-left">
-          <span className="font-bold text-slate-800">ShopifyPulse Analytics</span>
+          <span className="font-bold text-slate-800">Shopify Store Analytics</span>
           <span className="hidden sm:inline text-slate-300">•</span>
-          <span>© 2026 All rights reserved</span>
+          <span>INR (₹) Multi-Store Dashboard</span>
           <span className="hidden sm:inline text-slate-300">•</span>
           <span className="inline-flex items-center text-emerald-600 font-medium">
             <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 mr-1.5 animate-pulse"></span>
-            Systems Normal
+            Systems Operational
           </span>
         </div>
 
@@ -36,7 +36,7 @@ const Footer = () => {
             href="http://localhost:5000/api/health"
             target="_blank"
             rel="noreferrer"
-            className="hover:text-indigo-600 transition-colors inline-flex items-center gap-1"
+            className="hover:text-emerald-600 transition-colors inline-flex items-center gap-1"
           >
             <Activity className="w-3.5 h-3.5" />
             <span>API Health</span>
@@ -46,10 +46,10 @@ const Footer = () => {
             href="https://github.com/DevicharanPrajapati/ShopifyAnalyticsDashboard"
             target="_blank"
             rel="noreferrer"
-            className="hover:text-indigo-600 transition-colors inline-flex items-center gap-1"
+            className="hover:text-emerald-600 transition-colors inline-flex items-center gap-1"
           >
             <Code2 className="w-3.5 h-3.5" />
-            <span>GitHub</span>
+            <span>GitHub Repo</span>
           </a>
         </div>
       </div>
