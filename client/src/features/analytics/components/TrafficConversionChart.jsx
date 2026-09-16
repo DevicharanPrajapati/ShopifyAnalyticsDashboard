@@ -96,7 +96,7 @@ const TrafficConversionChart = ({ data = [] }) => {
                 axisLine={{ stroke: '#e2e8f0' }}
                 tick={{ fill: '#64748b', fontSize: 10 }}
               />
-              <Tooltip content={<CustomTooltip />} />
+              <Tooltip content={<CustomTooltip />}  cursor={false}/>
               <Legend
                 verticalAlign="top"
                 align="right"

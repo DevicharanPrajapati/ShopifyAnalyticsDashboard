@@ -65,7 +65,7 @@ const CategorySalesChart = ({ data = [] }) => {
                   tick={{ fill: '#475569', fontSize: 11, fontWeight: 500 }}
                   width={90}
                 />
-                <Tooltip content={<CustomTooltip />} />
+                <Tooltip content={<CustomTooltip />} cursor={false} />
                 <Bar dataKey="revenue" radius={[0, 6, 6, 0]}>
                   {data.map((entry, index) => (
                     <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />

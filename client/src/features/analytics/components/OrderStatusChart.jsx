@@ -43,7 +43,7 @@ const OrderStatusChart = ({ data = [] }) => {
             <>
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
-                  <Tooltip content={<CustomTooltip />} />
+                  <Tooltip content={<CustomTooltip />}  cursor={false}/>
                   <Pie
                     data={data}
                     dataKey="count"

@@ -359,6 +359,7 @@ const RevenueChart = ({ data = [], selectedMetric = "revenue", overview }) => {
                 />
                 <Tooltip
                   content={<CustomTooltip activeMetricKey={selectedMetric} />}
+                  cursor={false}
                 />
                 <Bar
                   dataKey={activeConfig.key}
@@ -394,6 +395,7 @@ const RevenueChart = ({ data = [], selectedMetric = "revenue", overview }) => {
                 />
                 <Tooltip
                   content={<CustomTooltip activeMetricKey={selectedMetric} />}
+                  cursor={false}
                 />
                 <Line
                   type="monotone"
@@ -457,6 +459,7 @@ const RevenueChart = ({ data = [], selectedMetric = "revenue", overview }) => {
                 />
                 <Tooltip
                   content={<CustomTooltip activeMetricKey={selectedMetric} />}
+                  cursor={false}
                 />
                 <Area
                   type="monotone"
