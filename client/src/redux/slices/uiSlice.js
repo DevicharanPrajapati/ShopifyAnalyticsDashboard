@@ -1,8 +1,16 @@
 import { createSlice } from '@reduxjs/toolkit';
 
+const getInitialCollapsed = () => {
+  try {
+    return localStorage.getItem('sidebar_collapsed') === 'true';
+  } catch {
+    return false;
+  }
+};
+
 const initialState = {
   sidebarOpen: false, // For mobile drawer
-  sidebarCollapsed: false, // For desktop collapse toggle
+  sidebarCollapsed: getInitialCollapsed(), // For desktop hide/show toggle
 };
 
 const uiSlice = createSlice({
@@ -17,10 +25,28 @@ const uiSlice = createSlice({
     },
     toggleSidebarCollapsed: (state) => {
       state.sidebarCollapsed = !state.sidebarCollapsed;
+      try {
+        localStorage.setItem('sidebar_collapsed', String(state.sidebarCollapsed));
+      } catch {
+        // ignore
+      }
+    },
+    setSidebarCollapsed: (state, action) => {
+      state.sidebarCollapsed = action.payload;
+      try {
+        localStorage.setItem('sidebar_collapsed', String(action.payload));
+      } catch {
+        // ignore
+      }
     },
   },
 });
 
-export const { toggleSidebar, setSidebarOpen, toggleSidebarCollapsed } = uiSlice.actions;
+export const {
+  toggleSidebar,
+  setSidebarOpen,
+  toggleSidebarCollapsed,
+  setSidebarCollapsed,
+} = uiSlice.actions;
 
 export default uiSlice.reducer;

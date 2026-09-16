@@ -9,7 +9,7 @@ const Footer = () => {
         <div className="flex flex-col sm:flex-row items-center gap-2 text-center sm:text-left">
           <span className="font-bold text-slate-800">Shopify Store Analytics</span>
           <span className="hidden sm:inline text-slate-300">•</span>
-          <span>INR (₹) Multi-Store Dashboard</span>
+          <span>INR (₹) Analytics Dashboard</span>
           <span className="hidden sm:inline text-slate-300">•</span>
           <span className="inline-flex items-center text-emerald-600 font-medium">
             <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 mr-1.5 animate-pulse"></span>

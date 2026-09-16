@@ -6,11 +6,11 @@ import {
   ShoppingCart,
   Package,
   X,
-  ShoppingBag,
+  PanelLeftClose,
   ChevronRight,
-  TrendingUp,
 } from 'lucide-react';
-import { setSidebarOpen } from '../../redux/slices/uiSlice.js';
+import { setSidebarOpen, toggleSidebarCollapsed } from '../../redux/slices/uiSlice.js';
+import Logo from '../common/Logo';
 
 const NAV_ITEMS = [
   { name: 'Dashboard', path: '/', icon: LayoutDashboard },
@@ -21,39 +21,44 @@ const NAV_ITEMS = [
 const Sidebar = () => {
   const dispatch = useDispatch();
   const location = useLocation();
-  const { sidebarOpen } = useSelector((state) => state.ui);
+  const { sidebarOpen, sidebarCollapsed } = useSelector((state) => state.ui);
   const { overview } = useSelector((state) => state.analytics);
 
   const closeSidebar = () => {
     dispatch(setSidebarOpen(false));
   };
 
+  const handleToggleDesktopCollapse = () => {
+    dispatch(toggleSidebarCollapsed());
+  };
+
   const navContent = (
     <div className="flex flex-col h-full bg-white text-slate-800 border-r border-slate-200 select-none">
       {/* Brand Header */}
-      <div className="flex items-center justify-between px-5 h-16 border-b border-slate-200">
-        <div className="flex items-center space-x-3">
-          <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-emerald-600 to-teal-500 flex items-center justify-center text-white shadow-md shadow-emerald-600/20 flex-shrink-0">
-            <ShoppingBag className="w-5 h-5" />
-          </div>
-          <div>
-            <span className="font-extrabold text-base tracking-tight text-slate-900 block leading-tight">
-              ShopifyStore
-            </span>
-            <span className="text-[10px] text-emerald-600 font-bold uppercase tracking-wider">
-              Analytics Studio
-            </span>
-          </div>
-        </div>
+      <div className="flex items-center justify-between px-4 sm:px-5 h-16 border-b border-slate-200">
+        <Logo size="md" />
 
-        {/* Mobile close button */}
-        <button
-          onClick={closeSidebar}
-          className="lg:hidden text-slate-400 hover:text-slate-700 p-1.5 rounded-lg hover:bg-slate-100 transition-colors"
-          aria-label="Close Sidebar"
-        >
-          <X className="w-5 h-5" />
-        </button>
+        <div className="flex items-center space-x-1">
+          {/* Desktop hide/collapse button */}
+          <button
+            onClick={handleToggleDesktopCollapse}
+            className="hidden lg:flex text-slate-400 hover:text-slate-800 hover:bg-slate-100 p-1.5 rounded-lg transition-colors cursor-pointer"
+            aria-label="Hide Sidebar"
+            title="Hide Sidebar"
+          >
+            <PanelLeftClose className="w-4 h-4 text-slate-500" />
+          </button>
+
+          {/* Mobile close button */}
+          <button
+            onClick={closeSidebar}
+            className="lg:hidden text-slate-400 hover:text-slate-700 p-1.5 rounded-lg hover:bg-slate-100 transition-colors cursor-pointer"
+            aria-label="Close Sidebar"
+            title="Close Sidebar"
+          >
+            <X className="w-5 h-5" />
+          </button>
+        </div>
       </div>
 
       {/* Store Identity Card (Single User - No Dropdown) */}
@@ -126,8 +131,12 @@ const Sidebar = () => {
 
   return (
     <>
-      {/* Desktop Fixed Sidebar (Rock-solid on screen scroll) */}
-      <aside className="hidden lg:block fixed inset-y-0 left-0 w-64 z-30 overflow-y-auto">
+      {/* Desktop Fixed Sidebar with smooth hide/show transform */}
+      <aside
+        className={`hidden lg:block fixed inset-y-0 left-0 w-64 z-30 overflow-y-auto transform transition-transform duration-300 ease-in-out ${
+          sidebarCollapsed ? '-translate-x-full' : 'translate-x-0'
+        }`}
+      >
         {navContent}
       </aside>
 
