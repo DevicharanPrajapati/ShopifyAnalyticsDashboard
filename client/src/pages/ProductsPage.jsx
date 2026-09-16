@@ -10,6 +10,7 @@ import {
   PieChart as PieIcon,
   BarChart2,
   CheckCircle2,
+  X,
 } from 'lucide-react';
 import {
   PieChart,
@@ -82,13 +83,13 @@ const ProductsPage = () => {
     endDate: '',
   });
 
-  const fetchProducts = async () => {
+  const fetchProducts = async (currentSearch = searchQuery, currentCategory = selectedCategory) => {
     try {
       setLoading(true);
       setError(null);
       const res = await productsAPI.getProducts({
-        search: searchQuery || undefined,
-        category: selectedCategory || undefined,
+        search: currentSearch?.trim() || undefined,
+        category: currentCategory || undefined,
         limit: 50,
       });
       if (res.data.success) {
@@ -115,17 +116,22 @@ const ProductsPage = () => {
     }
   };
 
+  // Debounced search & filter effect (300ms)
   useEffect(() => {
-    fetchProducts();
-  }, [selectedCategory]);
+    const timer = setTimeout(() => {
+      fetchProducts(searchQuery, selectedCategory);
+    }, 300);
+
+    return () => clearTimeout(timer);
+  }, [searchQuery, selectedCategory]);
 
   useEffect(() => {
     fetchProductStats();
   }, [dateFilter.preset, dateFilter.startDate, dateFilter.endDate]);
 
   const handleSearch = (e) => {
-    e.preventDefault();
-    fetchProducts();
+    if (e) e.preventDefault();
+    fetchProducts(searchQuery, selectedCategory);
   };
 
   const handleFilterChange = (newFilter) => {
@@ -359,25 +365,81 @@ const ProductsPage = () => {
         </div>
 
         {/* Search */}
-        <form onSubmit={handleSearch} className="flex items-center gap-2 w-full md:w-72">
+        <form onSubmit={handleSearch} className="flex items-center gap-2 w-full md:w-80">
           <div className="relative flex-1">
             <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
             <input
               type="text"
-              placeholder="Search product title..."
+              placeholder="Search title, SKU, category..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-9 pr-3 py-1.5 text-xs bg-slate-50 hover:bg-slate-100/70 focus:bg-white border border-slate-200 focus:border-emerald-500 rounded-xl outline-none text-slate-800 placeholder-slate-400 transition-all"
+              className="w-full pl-9 pr-8 py-1.5 text-xs bg-slate-50 hover:bg-slate-100/70 focus:bg-white border border-slate-200 focus:border-emerald-500 rounded-xl outline-none text-slate-800 placeholder-slate-400 transition-all"
             />
+            {searchQuery && (
+              <button
+                type="button"
+                onClick={() => setSearchQuery('')}
+                title="Clear search"
+                className="absolute right-2.5 top-1/2 -translate-y-1/2 p-0.5 rounded-full hover:bg-slate-200 text-slate-400 hover:text-slate-600 transition-colors cursor-pointer"
+              >
+                <X className="w-3.5 h-3.5" />
+              </button>
+            )}
           </div>
           <button
             type="submit"
-            className="px-3 py-1.5 text-xs font-bold bg-slate-900 hover:bg-slate-800 text-white rounded-xl cursor-pointer transition-all active:scale-95"
+            className="px-3 py-1.5 text-xs font-bold bg-slate-900 hover:bg-slate-800 active:scale-95 text-white rounded-xl cursor-pointer transition-all shrink-0"
           >
             Search
           </button>
         </form>
       </div>
+
+      {/* Active Search & Filter Indicators */}
+      {(searchQuery || selectedCategory) && (
+        <div className="flex flex-wrap items-center gap-2 text-xs text-slate-600 bg-white border border-slate-200 px-3.5 py-2.5 rounded-2xl shadow-2xs">
+          <span className="font-semibold text-slate-700">Active filters:</span>
+          {searchQuery && (
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-emerald-50 border border-emerald-200 text-emerald-800 font-medium rounded-xl text-[11px]">
+              <span>Search: <strong className="font-bold">"{searchQuery}"</strong></span>
+              <button
+                type="button"
+                onClick={() => setSearchQuery('')}
+                className="p-0.5 hover:bg-emerald-100 rounded-full cursor-pointer transition-colors"
+                title="Remove search filter"
+              >
+                <X className="w-3 h-3 text-emerald-700" />
+              </button>
+            </span>
+          )}
+          {selectedCategory && (
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-blue-50 border border-blue-200 text-blue-800 font-medium rounded-xl text-[11px]">
+              <span>Category: <strong className="font-bold">{selectedCategory}</strong></span>
+              <button
+                type="button"
+                onClick={() => setSelectedCategory('')}
+                className="p-0.5 hover:bg-blue-100 rounded-full cursor-pointer transition-colors"
+                title="Remove category filter"
+              >
+                <X className="w-3 h-3 text-blue-700" />
+              </button>
+            </span>
+          )}
+          <span className="text-slate-400 font-normal ml-1">
+            ({products.length} {products.length === 1 ? 'item' : 'items'} found)
+          </span>
+          <button
+            type="button"
+            onClick={() => {
+              setSearchQuery('');
+              setSelectedCategory('');
+            }}
+            className="ml-auto text-[11px] text-rose-600 hover:text-rose-700 font-bold cursor-pointer hover:underline"
+          >
+            Clear all
+          </button>
+        </div>
+      )}
 
       {error && (
         <div className="p-4 rounded-2xl bg-rose-50 border border-rose-200 text-rose-800 flex items-center space-x-2 text-xs">

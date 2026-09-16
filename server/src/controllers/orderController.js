@@ -32,6 +32,9 @@ export const getOrders = asyncHandler(async (req, res) => {
       { orderNumber: searchRegex },
       { 'customer.name': searchRegex },
       { 'customer.email': searchRegex },
+      { 'customer.city': searchRegex },
+      { 'items.title': searchRegex },
+      { 'items.sku': searchRegex },
     ];
   }
 

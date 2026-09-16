@@ -10,6 +10,7 @@ import {
   PackageCheck,
   IndianRupee,
   BarChart2,
+  X,
 } from 'lucide-react';
 import {
   BarChart,
@@ -71,15 +72,15 @@ const OrdersPage = () => {
     endDate: '',
   });
 
-  const fetchOrders = async () => {
+  const fetchOrders = async (currentPage = page, currentStatus = statusFilter, currentSearch = searchQuery) => {
     try {
       setLoading(true);
       setError(null);
       const params = {
-        page,
+        page: currentPage,
         limit: 15,
-        status: statusFilter || undefined,
-        search: searchQuery || undefined,
+        status: currentStatus || undefined,
+        search: currentSearch?.trim() || undefined,
       };
       const res = await ordersAPI.getOrders(params);
       if (res.data.success) {
@@ -107,18 +108,33 @@ const OrdersPage = () => {
     }
   };
 
+  // Debounced search & filter effect (300ms)
   useEffect(() => {
-    fetchOrders();
-  }, [page, statusFilter]);
+    const timer = setTimeout(() => {
+      fetchOrders(page, statusFilter, searchQuery);
+    }, 300);
+
+    return () => clearTimeout(timer);
+  }, [page, statusFilter, searchQuery]);
 
   useEffect(() => {
     fetchOrderStats();
   }, [dateFilter.preset, dateFilter.startDate, dateFilter.endDate]);
 
+  const handleSearchChange = (e) => {
+    setSearchQuery(e.target.value);
+    if (page !== 1) setPage(1);
+  };
+
+  const handleClearSearch = () => {
+    setSearchQuery('');
+    if (page !== 1) setPage(1);
+  };
+
   const handleSearchSubmit = (e) => {
-    e.preventDefault();
-    setPage(1);
-    fetchOrders();
+    if (e) e.preventDefault();
+    if (page !== 1) setPage(1);
+    fetchOrders(1, statusFilter, searchQuery);
   };
 
   const handleFilterChange = (newFilter) => {
@@ -340,25 +356,85 @@ const OrdersPage = () => {
         </div>
 
         {/* Search Bar */}
-        <form onSubmit={handleSearchSubmit} className="flex items-center gap-2 w-full md:w-72">
+        <form onSubmit={handleSearchSubmit} className="flex items-center gap-2 w-full md:w-80">
           <div className="relative flex-1">
             <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
             <input
               type="text"
-              placeholder="Search by ID or customer..."
+              placeholder="Search order #, customer, email, city..."
               value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-9 pr-3 py-1.5 text-xs bg-slate-50 hover:bg-slate-100/70 focus:bg-white border border-slate-200 focus:border-emerald-500 rounded-xl outline-none text-slate-800 placeholder-slate-400 transition-all"
+              onChange={handleSearchChange}
+              className="w-full pl-9 pr-8 py-1.5 text-xs bg-slate-50 hover:bg-slate-100/70 focus:bg-white border border-slate-200 focus:border-emerald-500 rounded-xl outline-none text-slate-800 placeholder-slate-400 transition-all"
             />
+            {searchQuery && (
+              <button
+                type="button"
+                onClick={handleClearSearch}
+                title="Clear search"
+                className="absolute right-2.5 top-1/2 -translate-y-1/2 p-0.5 rounded-full hover:bg-slate-200 text-slate-400 hover:text-slate-600 transition-colors cursor-pointer"
+              >
+                <X className="w-3.5 h-3.5" />
+              </button>
+            )}
           </div>
           <button
             type="submit"
-            className="px-3 py-1.5 text-xs font-bold bg-slate-900 hover:bg-slate-800 text-white rounded-xl cursor-pointer transition-all active:scale-95"
+            className="px-3 py-1.5 text-xs font-bold bg-slate-900 hover:bg-slate-800 active:scale-95 text-white rounded-xl cursor-pointer transition-all shrink-0"
           >
             Search
           </button>
         </form>
       </div>
+
+      {/* Active Search & Filter Indicators */}
+      {(searchQuery || statusFilter) && (
+        <div className="flex flex-wrap items-center gap-2 text-xs text-slate-600 bg-white border border-slate-200 px-3.5 py-2.5 rounded-2xl shadow-2xs">
+          <span className="font-semibold text-slate-700">Active filters:</span>
+          {searchQuery && (
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-emerald-50 border border-emerald-200 text-emerald-800 font-medium rounded-xl text-[11px]">
+              <span>Search: <strong className="font-bold">"{searchQuery}"</strong></span>
+              <button
+                type="button"
+                onClick={handleClearSearch}
+                className="p-0.5 hover:bg-emerald-100 rounded-full cursor-pointer transition-colors"
+                title="Remove search filter"
+              >
+                <X className="w-3 h-3 text-emerald-700" />
+              </button>
+            </span>
+          )}
+          {statusFilter && (
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-blue-50 border border-blue-200 text-blue-800 font-medium rounded-xl text-[11px]">
+              <span>Status: <strong className="font-bold capitalize">{statusFilter}</strong></span>
+              <button
+                type="button"
+                onClick={() => {
+                  setStatusFilter('');
+                  setPage(1);
+                }}
+                className="p-0.5 hover:bg-blue-100 rounded-full cursor-pointer transition-colors"
+                title="Remove status filter"
+              >
+                <X className="w-3 h-3 text-blue-700" />
+              </button>
+            </span>
+          )}
+          <span className="text-slate-400 font-normal ml-1">
+            ({orders.length} {orders.length === 1 ? 'order' : 'orders'} on this page)
+          </span>
+          <button
+            type="button"
+            onClick={() => {
+              setSearchQuery('');
+              setStatusFilter('');
+              setPage(1);
+            }}
+            className="ml-auto text-[11px] text-rose-600 hover:text-rose-700 font-bold cursor-pointer hover:underline"
+          >
+            Clear all
+          </button>
+        </div>
+      )}
 
       {error && (
         <div className="p-4 rounded-2xl bg-rose-50 border border-rose-200 text-rose-800 flex items-center space-x-2 text-xs">

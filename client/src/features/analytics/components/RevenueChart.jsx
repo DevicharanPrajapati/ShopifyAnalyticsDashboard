@@ -1,7 +1,11 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   AreaChart,
   Area,
+  BarChart,
+  Bar,
+  LineChart,
+  Line,
   XAxis,
   YAxis,
   CartesianGrid,
@@ -13,6 +17,9 @@ import {
   ShoppingCart,
   Percent,
   TrendingUp,
+  AreaChart as AreaIcon,
+  BarChart2,
+  LineChart as LineIcon,
 } from 'lucide-react';
 
 const METRIC_CONFIG = {
@@ -95,7 +102,7 @@ const CustomTooltip = ({ active, payload, label, activeMetricKey }) => {
           </span>
         </div>
 
-        {/* Secondary Contextual Metrics */}
+        {/* Supporting Contextual Metrics */}
         <div className="pt-1.5 border-t border-slate-800/80 space-y-1 text-[11px] text-slate-400">
           {activeMetricKey !== 'revenue' && (
             <div className="flex items-center justify-between">
@@ -140,6 +147,24 @@ const RevenueChart = ({
   onMetricChange,
   overview,
 }) => {
+  // Chart Style / Type State ('area' | 'bar' | 'line') with localStorage persistence
+  const [chartType, setChartType] = useState(() => {
+    try {
+      return localStorage.getItem('shopify_chart_type') || 'area';
+    } catch {
+      return 'area';
+    }
+  });
+
+  const handleChartTypeChange = (type) => {
+    setChartType(type);
+    try {
+      localStorage.setItem('shopify_chart_type', type);
+    } catch {
+      // ignore
+    }
+  };
+
   const activeConfig = METRIC_CONFIG[selectedMetric] || METRIC_CONFIG.revenue;
   const ActiveIcon = activeConfig.icon;
 
@@ -213,8 +238,8 @@ const RevenueChart = ({
 
   return (
     <div className="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200 shadow-xs min-w-0 w-full overflow-hidden">
-      {/* Header with Title and Shopify-Style Metric Switcher Pills */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 mb-5">
+      {/* Header with Metric Information and Dual Selectors (Metric & Chart Style) */}
+      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3 mb-5">
         <div>
           <div className="flex items-center space-x-2">
             <div
@@ -230,34 +255,78 @@ const RevenueChart = ({
           <p className="text-xs text-slate-500 mt-1">{getSubtext()}</p>
         </div>
 
-        {/* Shopify-Style Direct Metric Selector Pills */}
-        <div className="inline-flex bg-slate-100 p-1 rounded-xl self-start md:self-auto overflow-x-auto max-w-full">
-          {Object.entries(METRIC_CONFIG).map(([metricKey, cfg]) => {
-            const Icon = cfg.icon;
-            const isSelected = selectedMetric === metricKey;
+        <div className="flex flex-wrap items-center gap-2.5 self-start lg:self-auto">
+          {/* Chart Style / Type Switcher: Area | Bar | Line */}
+          <div className="flex items-center bg-slate-100 p-1 rounded-xl border border-slate-200/80">
+            <button
+              onClick={() => handleChartTypeChange('area')}
+              className={`px-2.5 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
+                chartType === 'area'
+                  ? 'bg-white text-emerald-700 shadow-xs ring-1 ring-slate-200/80'
+                  : 'text-slate-500 hover:text-slate-900'
+              }`}
+              title="Area Chart (Smooth gradient fill)"
+            >
+              <AreaIcon className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">Area</span>
+            </button>
 
-            return (
-              <button
-                key={metricKey}
-                onClick={() => onMetricChange && onMetricChange(metricKey)}
-                className={`flex items-center space-x-1.5 px-3 py-1.5 text-xs font-bold rounded-lg transition-all cursor-pointer whitespace-nowrap active:scale-95 ${
-                  isSelected
-                    ? 'bg-white text-slate-900 shadow-xs ring-1 ring-slate-200/80'
-                    : 'text-slate-500 hover:text-slate-900 hover:bg-slate-200/60'
-                }`}
-              >
-                <Icon
-                  className="w-3.5 h-3.5"
-                  style={{ color: isSelected ? cfg.stroke : undefined }}
-                />
-                <span>{cfg.shortLabel}</span>
-              </button>
-            );
-          })}
+            <button
+              onClick={() => handleChartTypeChange('bar')}
+              className={`px-2.5 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
+                chartType === 'bar'
+                  ? 'bg-white text-emerald-700 shadow-xs ring-1 ring-slate-200/80'
+                  : 'text-slate-500 hover:text-slate-900'
+              }`}
+              title="Bar Chart (Discrete columns)"
+            >
+              <BarChart2 className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">Bar</span>
+            </button>
+
+            <button
+              onClick={() => handleChartTypeChange('line')}
+              className={`px-2.5 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
+                chartType === 'line'
+                  ? 'bg-white text-emerald-700 shadow-xs ring-1 ring-slate-200/80'
+                  : 'text-slate-500 hover:text-slate-900'
+              }`}
+              title="Line Chart (Trend line & points)"
+            >
+              <LineIcon className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">Line</span>
+            </button>
+          </div>
+
+          {/* Shopify-Style Direct Metric Selector Pills */}
+          <div className="inline-flex bg-slate-100 p-1 rounded-xl overflow-x-auto max-w-full">
+            {Object.entries(METRIC_CONFIG).map(([metricKey, cfg]) => {
+              const Icon = cfg.icon;
+              const isSelected = selectedMetric === metricKey;
+
+              return (
+                <button
+                  key={metricKey}
+                  onClick={() => onMetricChange && onMetricChange(metricKey)}
+                  className={`flex items-center space-x-1.5 px-3 py-1.5 text-xs font-bold rounded-lg transition-all cursor-pointer whitespace-nowrap active:scale-95 ${
+                    isSelected
+                      ? 'bg-white text-slate-900 shadow-xs ring-1 ring-slate-200/80'
+                      : 'text-slate-500 hover:text-slate-900 hover:bg-slate-200/60'
+                  }`}
+                >
+                  <Icon
+                    className="w-3.5 h-3.5"
+                    style={{ color: isSelected ? cfg.stroke : undefined }}
+                  />
+                  <span>{cfg.shortLabel}</span>
+                </button>
+              );
+            })}
+          </div>
         </div>
       </div>
 
-      {/* Recharts Area Chart */}
+      {/* Dynamic Recharts Chart Area (Morphs between Area, Bar, and Line) */}
       <div className="w-full h-64 sm:h-72 lg:h-80 min-w-0 overflow-hidden">
         {formattedData.length === 0 ? (
           <div className="w-full h-full flex items-center justify-center text-slate-400 text-xs sm:text-sm">
@@ -265,73 +334,146 @@ const RevenueChart = ({
           </div>
         ) : (
           <ResponsiveContainer width="100%" height="100%">
-            <AreaChart
-              data={formattedData}
-              margin={{ top: 10, right: 10, left: -10, bottom: 0 }}
-            >
-              <defs>
-                <linearGradient
-                  id={activeConfig.gradientId}
-                  x1="0%"
-                  y1="0%"
-                  x2="0%"
-                  y2="100%"
-                >
-                  <stop
-                    offset="5%"
-                    stopColor={activeConfig.gradientColor}
-                    stopOpacity={0.4}
-                  />
-                  <stop
-                    offset="95%"
-                    stopColor={activeConfig.gradientColor}
-                    stopOpacity={0.0}
-                  />
-                </linearGradient>
-              </defs>
-
-              <CartesianGrid
-                strokeDasharray="3 3"
-                vertical={false}
-                stroke="#f1f5f9"
-              />
-
-              <XAxis
-                dataKey="displayDate"
-                tickLine={false}
-                axisLine={{ stroke: '#e2e8f0' }}
-                tick={{ fill: '#64748b', fontSize: 10 }}
-                minTickGap={25}
-              />
-
-              <YAxis
-                tickLine={false}
-                axisLine={{ stroke: '#e2e8f0' }}
-                tick={{ fill: '#64748b', fontSize: 10 }}
-                width={50}
-                tickFormatter={activeConfig.yAxisFormatter}
-              />
-
-              <Tooltip
-                content={<CustomTooltip activeMetricKey={selectedMetric} />}
-              />
-
-              <Area
-                type="monotone"
-                dataKey={activeConfig.key}
-                name={activeConfig.label}
-                stroke={activeConfig.stroke}
-                strokeWidth={2.5}
-                fillOpacity={1}
-                fill={`url(#${activeConfig.gradientId})`}
-                activeDot={{
-                  r: 6,
-                  fill: activeConfig.stroke,
-                  stroke: '#ffffff',
-                  strokeWidth: 2,
-                }}
-              />
-            </AreaChart>
+            {chartType === 'bar' ? (
+              <BarChart
+                data={formattedData}
+                margin={{ top: 10, right: 10, left: -10, bottom: 0 }}
+              >
+                <CartesianGrid
+                  strokeDasharray="3 3"
+                  vertical={false}
+                  stroke="#f1f5f9"
+                />
+                <XAxis
+                  dataKey="displayDate"
+                  tickLine={false}
+                  axisLine={{ stroke: '#e2e8f0' }}
+                  tick={{ fill: '#64748b', fontSize: 10 }}
+                  minTickGap={25}
+                />
+                <YAxis
+                  tickLine={false}
+                  axisLine={{ stroke: '#e2e8f0' }}
+                  tick={{ fill: '#64748b', fontSize: 10 }}
+                  width={50}
+                  tickFormatter={activeConfig.yAxisFormatter}
+                />
+                <Tooltip
+                  content={<CustomTooltip activeMetricKey={selectedMetric} />}
+                />
+                <Bar
+                  dataKey={activeConfig.key}
+                  name={activeConfig.label}
+                  fill={activeConfig.stroke}
+                  radius={[5, 5, 0, 0]}
+                />
+              </BarChart>
+            ) : chartType === 'line' ? (
+              <LineChart
+                data={formattedData}
+                margin={{ top: 10, right: 10, left: -10, bottom: 0 }}
+              >
+                <CartesianGrid
+                  strokeDasharray="3 3"
+                  vertical={false}
+                  stroke="#f1f5f9"
+                />
+                <XAxis
+                  dataKey="displayDate"
+                  tickLine={false}
+                  axisLine={{ stroke: '#e2e8f0' }}
+                  tick={{ fill: '#64748b', fontSize: 10 }}
+                  minTickGap={25}
+                />
+                <YAxis
+                  tickLine={false}
+                  axisLine={{ stroke: '#e2e8f0' }}
+                  tick={{ fill: '#64748b', fontSize: 10 }}
+                  width={50}
+                  tickFormatter={activeConfig.yAxisFormatter}
+                />
+                <Tooltip
+                  content={<CustomTooltip activeMetricKey={selectedMetric} />}
+                />
+                <Line
+                  type="monotone"
+                  dataKey={activeConfig.key}
+                  name={activeConfig.label}
+                  stroke={activeConfig.stroke}
+                  strokeWidth={2.5}
+                  dot={{ r: 3, fill: activeConfig.stroke }}
+                  activeDot={{
+                    r: 6,
+                    fill: activeConfig.stroke,
+                    stroke: '#ffffff',
+                    strokeWidth: 2,
+                  }}
+                />
+              </LineChart>
+            ) : (
+              <AreaChart
+                data={formattedData}
+                margin={{ top: 10, right: 10, left: -10, bottom: 0 }}
+              >
+                <defs>
+                  <linearGradient
+                    id={activeConfig.gradientId}
+                    x1="0%"
+                    y1="0%"
+                    x2="0%"
+                    y2="100%"
+                  >
+                    <stop
+                      offset="5%"
+                      stopColor={activeConfig.gradientColor}
+                      stopOpacity={0.4}
+                    />
+                    <stop
+                      offset="95%"
+                      stopColor={activeConfig.gradientColor}
+                      stopOpacity={0.0}
+                    />
+                  </linearGradient>
+                </defs>
+                <CartesianGrid
+                  strokeDasharray="3 3"
+                  vertical={false}
+                  stroke="#f1f5f9"
+                />
+                <XAxis
+                  dataKey="displayDate"
+                  tickLine={false}
+                  axisLine={{ stroke: '#e2e8f0' }}
+                  tick={{ fill: '#64748b', fontSize: 10 }}
+                  minTickGap={25}
+                />
+                <YAxis
+                  tickLine={false}
+                  axisLine={{ stroke: '#e2e8f0' }}
+                  tick={{ fill: '#64748b', fontSize: 10 }}
+                  width={50}
+                  tickFormatter={activeConfig.yAxisFormatter}
+                />
+                <Tooltip
+                  content={<CustomTooltip activeMetricKey={selectedMetric} />}
+                />
+                <Area
+                  type="monotone"
+                  dataKey={activeConfig.key}
+                  name={activeConfig.label}
+                  stroke={activeConfig.stroke}
+                  strokeWidth={2.5}
+                  fillOpacity={1}
+                  fill={`url(#${activeConfig.gradientId})`}
+                  activeDot={{
+                    r: 6,
+                    fill: activeConfig.stroke,
+                    stroke: '#ffffff',
+                    strokeWidth: 2,
+                  }}
+                />
+              </AreaChart>
+            )}
           </ResponsiveContainer>
         )}
       </div>

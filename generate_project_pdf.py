@@ -355,8 +355,8 @@ def build_pdf(filename="Shopify_Store_Analytics_Project_Documentation.pdf"):
     ))
 
     dash_bullets = [
-        "<b>Executive KPI Summary Cards:</b> Four responsive cards displaying Total Revenue (INR), Total Completed Orders, Average Order Value (AOV), and Conversion Rate. Each card renders comparative percentage change (+/-) against the preceding matching period.",
-        "<b>Revenue Trajectory (Area Chart):</b> Smooth spline Area Chart with emerald gradient fill, showing daily gross revenue over the chosen window with currency tooltips.",
+        "<b>Shopify-Style Interactive KPI Cards:</b> Four responsive cards displaying Total Revenue, Total Orders, Conversion Rate, and Average Order Value (AOV). Clicking on ANY card highlights it as active and dynamically renders that metric in the primary chart below.",
+        "<b>Dynamic Multi-Style Performance Chart:</b> Morphs based on the active KPI card. Features a dedicated Chart Type switcher allowing merchants to toggle between <b>Area Chart</b> (smooth gradient), <b>Bar Chart</b> (discrete columns), and <b>Line Chart</b> (trend stroke & points) with localStorage persistence.",
         "<b>Traffic vs Orders Trend (Dual Bar Chart):</b> Side-by-side comparison of daily store footfall (visitors) versus order conversions, revealing buyer purchase intent patterns across weekdays vs weekends.",
         "<b>Category Sales Distribution (Horizontal Bar Chart):</b> Ranks category revenue contribution (Electronics, Apparel, Home & Kitchen, Accessories, Bags, Footwear).",
         "<b>Payment Settlement Breakdown (Donut Chart):</b> Visualizes paid, pending, and refunded transactions with an interactive center counter.",

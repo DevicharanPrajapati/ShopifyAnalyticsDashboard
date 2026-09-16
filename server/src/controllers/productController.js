@@ -27,7 +27,12 @@ export const getProducts = asyncHandler(async (req, res) => {
   }
 
   if (search && search.trim()) {
-    filter.title = { $regex: search.trim(), $options: 'i' };
+    const searchRegex = { $regex: search.trim(), $options: 'i' };
+    filter.$or = [
+      { title: searchRegex },
+      { sku: searchRegex },
+      { category: searchRegex },
+    ];
   }
 
   const [products, total] = await Promise.all([
