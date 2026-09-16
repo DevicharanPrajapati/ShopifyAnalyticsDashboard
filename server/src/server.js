@@ -13,7 +13,7 @@ const startServer = async () => {
   app.listen(PORT, () => {
     console.log(`🚀 Server running on port ${PORT} in ${process.env.NODE_ENV || 'development'} mode`);
     console.log(`👉 API Health Check: http://localhost:${PORT}/api/health`);
-    console.log(`👉 Analytics API: http://localhost:${PORT}/api/analytics/overview`);
+    console.log(`👉 Analytics API: http://localhost:${PORT}/api/analytics/dashboard`);
   });
 };
 
