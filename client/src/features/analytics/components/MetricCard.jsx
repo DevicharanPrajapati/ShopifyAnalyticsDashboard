@@ -42,11 +42,6 @@ const MetricCard = ({
           : 'bg-white border-slate-200 hover:border-slate-300 hover:shadow-xs'
       }`}
     >
-      {/* Shopify-Style Active Top Indicator Bar */}
-      {isActive && (
-        <div className="absolute top-0 inset-x-0 h-1 bg-emerald-500 rounded-t-2xl" />
-      )}
-
       <div className="flex items-center justify-between">
         <div className="flex items-center space-x-1.5 min-w-0 pr-2">
           <span className="text-[11px] sm:text-xs font-bold text-slate-500 uppercase tracking-wider truncate">
