@@ -6,6 +6,8 @@
 import mongoose from 'mongoose';
 import Product from '../models/Product.js';
 import { asyncHandler } from '../utils/asyncHandler.js';
+import { ApiResponse } from '../utils/apiResponse.js';
+import { ApiError } from '../utils/apiError.js';
 
 /**
  * @route   GET /api/products
@@ -18,7 +20,6 @@ export const getProducts = asyncHandler(async (req, res) => {
   const limitNum = Math.min(100, Math.max(1, parseInt(limit, 10) || 50));
   const skip = (pageNum - 1) * limitNum;
 
-  // Base filter for current single-store setup
   const filter = {};
 
   if (category && category.trim()) {
@@ -38,9 +39,9 @@ export const getProducts = asyncHandler(async (req, res) => {
     Product.countDocuments(filter),
   ]);
 
-  res.status(200).json({
-    success: true,
-    data: {
+  return new ApiResponse(
+    200,
+    {
       products,
       pagination: {
         total,
@@ -49,7 +50,8 @@ export const getProducts = asyncHandler(async (req, res) => {
         limit: limitNum,
       },
     },
-  });
+    'Products retrieved successfully'
+  ).send(res);
 });
 
 /**
@@ -60,23 +62,14 @@ export const getProductById = asyncHandler(async (req, res) => {
   const { id } = req.params;
 
   if (!mongoose.isValidObjectId(id)) {
-    return res.status(404).json({
-      success: false,
-      message: 'Product not found: invalid ID format',
-    });
+    throw new ApiError(404, 'Product not found: invalid ID format');
   }
 
   const product = await Product.findById(id).lean();
 
   if (!product) {
-    return res.status(404).json({
-      success: false,
-      message: 'Product not found',
-    });
+    throw new ApiError(404, 'Product not found');
   }
 
-  res.status(200).json({
-    success: true,
-    data: product,
-  });
+  return new ApiResponse(200, product, 'Product retrieved successfully').send(res);
 });

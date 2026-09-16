@@ -6,6 +6,8 @@
 import mongoose from 'mongoose';
 import Order from '../models/Order.js';
 import { asyncHandler } from '../utils/asyncHandler.js';
+import { ApiResponse } from '../utils/apiResponse.js';
+import { ApiError } from '../utils/apiError.js';
 
 /**
  * @route   GET /api/orders
@@ -18,7 +20,6 @@ export const getOrders = asyncHandler(async (req, res) => {
   const limitNum = Math.min(100, Math.max(1, parseInt(limit, 10) || 20));
   const skip = (pageNum - 1) * limitNum;
 
-  // Base filter for current single-store setup
   const filter = {};
 
   if (status) {
@@ -43,9 +44,9 @@ export const getOrders = asyncHandler(async (req, res) => {
     Order.countDocuments(filter),
   ]);
 
-  res.status(200).json({
-    success: true,
-    data: {
+  return new ApiResponse(
+    200,
+    {
       orders,
       pagination: {
         total,
@@ -54,7 +55,8 @@ export const getOrders = asyncHandler(async (req, res) => {
         limit: limitNum,
       },
     },
-  });
+    'Orders retrieved successfully'
+  ).send(res);
 });
 
 /**
@@ -65,23 +67,14 @@ export const getOrderById = asyncHandler(async (req, res) => {
   const { id } = req.params;
 
   if (!mongoose.isValidObjectId(id)) {
-    return res.status(404).json({
-      success: false,
-      message: 'Order not found: invalid ID format',
-    });
+    throw new ApiError(404, 'Order not found: invalid ID format');
   }
 
   const order = await Order.findById(id).lean();
 
   if (!order) {
-    return res.status(404).json({
-      success: false,
-      message: 'Order not found',
-    });
+    throw new ApiError(404, 'Order not found');
   }
 
-  res.status(200).json({
-    success: true,
-    data: order,
-  });
+  return new ApiResponse(200, order, 'Order retrieved successfully').send(res);
 });

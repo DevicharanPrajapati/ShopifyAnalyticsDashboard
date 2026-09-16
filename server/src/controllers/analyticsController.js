@@ -6,6 +6,7 @@
 import * as analyticsService from '../services/analyticsService.js';
 import { getDateRangeFromQuery } from '../utils/dateHelper.js';
 import { asyncHandler } from '../utils/asyncHandler.js';
+import { ApiResponse } from '../utils/apiResponse.js';
 
 /**
  * @route   GET /api/analytics/overview
@@ -15,10 +16,7 @@ export const getOverview = asyncHandler(async (req, res) => {
   const dateRange = getDateRangeFromQuery(req.query);
   const data = await analyticsService.getDashboardOverview(dateRange);
 
-  res.status(200).json({
-    success: true,
-    data,
-  });
+  return new ApiResponse(200, data, 'Overview metrics retrieved successfully').send(res);
 });
 
 /**
@@ -29,10 +27,7 @@ export const getRevenueTrend = asyncHandler(async (req, res) => {
   const dateRange = getDateRangeFromQuery(req.query);
   const data = await analyticsService.getRevenueOverTime(dateRange);
 
-  res.status(200).json({
-    success: true,
-    data,
-  });
+  return new ApiResponse(200, data, 'Revenue trend retrieved successfully').send(res);
 });
 
 /**
@@ -48,10 +43,7 @@ export const getTopProducts = asyncHandler(async (req, res) => {
     limit,
   });
 
-  res.status(200).json({
-    success: true,
-    data,
-  });
+  return new ApiResponse(200, data, 'Top products retrieved successfully').send(res);
 });
 
 /**
@@ -62,10 +54,7 @@ export const getRecentOrders = asyncHandler(async (req, res) => {
   const limit = Math.max(1, parseInt(req.query.limit, 10) || 10);
   const data = await analyticsService.getRecentOrders(limit);
 
-  res.status(200).json({
-    success: true,
-    data,
-  });
+  return new ApiResponse(200, data, 'Recent orders retrieved successfully').send(res);
 });
 
 /**
@@ -76,10 +65,7 @@ export const getOrderStatusBreakdown = asyncHandler(async (req, res) => {
   const dateRange = getDateRangeFromQuery(req.query);
   const data = await analyticsService.getOrderStatusBreakdown(dateRange);
 
-  res.status(200).json({
-    success: true,
-    data,
-  });
+  return new ApiResponse(200, data, 'Order status breakdown retrieved successfully').send(res);
 });
 
 /**
@@ -90,10 +76,7 @@ export const getOrdersPageStats = asyncHandler(async (req, res) => {
   const dateRange = getDateRangeFromQuery(req.query);
   const data = await analyticsService.getOrdersAnalytics(dateRange);
 
-  res.status(200).json({
-    success: true,
-    data,
-  });
+  return new ApiResponse(200, data, 'Orders analytics retrieved successfully').send(res);
 });
 
 /**
@@ -108,13 +91,14 @@ export const getProductsPageStats = asyncHandler(async (req, res) => {
     analyticsService.getProductsAnalytics(dateRange),
   ]);
 
-  res.status(200).json({
-    success: true,
-    data: {
+  return new ApiResponse(
+    200,
+    {
       categoryShare,
       ...productStats,
     },
-  });
+    'Products analytics retrieved successfully'
+  ).send(res);
 });
 
 /**
@@ -142,9 +126,9 @@ export const getCompleteDashboard = asyncHandler(async (req, res) => {
     analyticsService.getOrderStatusBreakdown(dateRange),
   ]);
 
-  res.status(200).json({
-    success: true,
-    data: {
+  return new ApiResponse(
+    200,
+    {
       overview,
       revenueTrend,
       trafficTrend,
@@ -153,5 +137,6 @@ export const getCompleteDashboard = asyncHandler(async (req, res) => {
       recentOrders,
       statusBreakdown,
     },
-  });
+    'Complete dashboard analytics retrieved successfully'
+  ).send(res);
 });
