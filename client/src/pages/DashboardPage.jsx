@@ -171,7 +171,6 @@ const DashboardPage = () => {
           <RevenueChart
             data={combinedTrend}
             selectedMetric={selectedMetric}
-            onMetricChange={setSelectedMetric}
             overview={overview}
           />
 

@@ -1,7 +1,7 @@
 import React from 'react';
-import { CheckCircle2, Clock, RotateCcw, AlertCircle } from 'lucide-react';
+import { CheckCircle2, Clock, RotateCcw } from 'lucide-react';
 
-const Badge = ({ status, variant = 'default', children, className = '' }) => {
+const Badge = ({ status, children, className = '' }) => {
   if (status) {
     const s = status.toLowerCase();
     if (s === 'paid' || s === 'completed' || s === 'fulfilled' || s === 'active') {

@@ -54,7 +54,7 @@ const CustomCategoryTooltip = ({ active, payload }) => {
   return null;
 };
 
-const CustomStockTooltip = ({ active, payload, label }) => {
+const CustomStockTooltip = ({ active, payload }) => {
   if (active && payload && payload.length) {
     const data = payload[0].payload;
     return (

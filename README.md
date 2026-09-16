@@ -42,8 +42,6 @@ A full-stack Shopify Store Analytics Dashboard designed to monitor and visualize
 SopifyStoreAnalytics/
 ├── .gitignore                                    # Root git ignore
 ├── README.md                                     # Project documentation
-├── Shopify_Store_Analytics_Project_Documentation.pdf # 9-page Technical Manual
-├── generate_project_pdf.py                       # PDF generator script
 ├── client/                                       # Frontend React 19 + Vite App
 │   ├── .env.example                              # Client environment template
 │   ├── index.html                                # HTML shell with Plus Jakarta Sans

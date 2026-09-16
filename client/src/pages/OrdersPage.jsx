@@ -22,13 +22,12 @@ import {
   CartesianGrid,
   Tooltip,
   ResponsiveContainer,
-  Legend,
 } from 'recharts';
 import { ordersAPI, analyticsAPI } from '../services/api';
 import Badge from '../components/common/Badge';
 import DateFilter from '../features/analytics/components/DateFilter';
 
-const CustomTierTooltip = ({ active, payload, label }) => {
+const CustomTierTooltip = ({ active, payload }) => {
   if (active && payload && payload.length) {
     const data = payload[0].payload;
     return (

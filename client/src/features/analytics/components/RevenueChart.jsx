@@ -144,7 +144,6 @@ const CustomTooltip = ({ active, payload, label, activeMetricKey }) => {
 const RevenueChart = ({
   data = [],
   selectedMetric = 'revenue',
-  onMetricChange,
   overview,
 }) => {
   // Chart Style / Type State ('area' | 'bar' | 'line') with localStorage persistence
