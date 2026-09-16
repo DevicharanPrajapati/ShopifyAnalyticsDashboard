@@ -1,34 +1,16 @@
 import React from 'react';
-import { ShoppingCart, CheckCircle2, Clock, RotateCcw, Calendar, User } from 'lucide-react';
-
-const StatusBadge = ({ status }) => {
-  return (
-    <span
-      className={`inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-semibold ${
-        status === 'paid'
-          ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
-          : status === 'pending'
-          ? 'bg-amber-50 text-amber-700 border border-amber-200'
-          : 'bg-rose-50 text-rose-700 border border-rose-200'
-      }`}
-    >
-      {status === 'paid' && <CheckCircle2 className="w-3 h-3 mr-1 flex-shrink-0" />}
-      {status === 'pending' && <Clock className="w-3 h-3 mr-1 flex-shrink-0" />}
-      {status === 'refunded' && <RotateCcw className="w-3 h-3 mr-1 flex-shrink-0" />}
-      <span className="capitalize">{status}</span>
-    </span>
-  );
-};
+import { ShoppingCart } from 'lucide-react';
+import Badge from '../../../components/common/Badge';
 
 const RecentOrdersTable = ({ orders = [] }) => {
   return (
-    <div className="bg-white p-3.5 sm:p-5 rounded-2xl border border-slate-200 shadow-xs min-w-0">
+    <div className="bg-white p-4 sm:p-6 rounded-2xl border border-slate-200/90 shadow-2xs min-w-0">
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center space-x-2">
-          <ShoppingCart className="w-5 h-5 text-emerald-600 flex-shrink-0" />
-          <h2 className="text-sm sm:text-base font-bold text-slate-900">Recent Store Orders</h2>
+          <ShoppingCart className="w-5 h-5 text-indigo-600 flex-shrink-0" />
+          <h2 className="text-base sm:text-lg font-bold text-slate-900">Recent Transactions</h2>
         </div>
-        <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-slate-100 text-slate-600">
+        <span className="text-xs font-bold px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-600">
           Latest {orders.length}
         </span>
       </div>
@@ -48,19 +30,20 @@ const RecentOrdersTable = ({ orders = [] }) => {
               });
 
               return (
-                <div key={order._id || order.orderNumber} className="py-3 first:pt-0 last:pb-0 space-y-1.5">
+                <div key={order._id || order.orderNumber} className="py-3.5 first:pt-0 last:pb-0 space-y-2">
                   <div className="flex items-center justify-between">
                     <span className="font-extrabold text-xs text-slate-900">
                       {order.orderNumber}
                     </span>
-                    <StatusBadge status={order.financialStatus} />
+                    <Badge status={order.financialStatus} />
                   </div>
 
                   <div className="flex items-center justify-between text-[11px] text-slate-500">
                     <div className="truncate pr-2">
-                      <span className="font-semibold text-slate-700">{order.customer?.name || 'Guest Customer'}</span>
+                      <span className="font-bold text-slate-800">{order.customer?.name || 'Guest Customer'}</span>
+                      <span className="text-slate-400 block text-[10px]">{order.customer?.email || 'N/A'}</span>
                     </div>
-                    <span className="font-bold text-slate-900 text-xs">
+                    <span className="font-extrabold text-slate-900 text-xs">
                       ${(order.totalAmount || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                     </span>
                   </div>
@@ -78,14 +61,14 @@ const RecentOrdersTable = ({ orders = [] }) => {
           <div className="hidden sm:block overflow-x-auto">
             <table className="w-full text-left text-xs border-collapse">
               <thead>
-                <tr className="border-b border-slate-100 text-slate-400 font-semibold uppercase tracking-wider">
-                  <th className="pb-3 pr-4">Order</th>
-                  <th className="pb-3 px-4">Customer</th>
-                  <th className="pb-3 px-4">Date</th>
-                  <th className="pb-3 px-4">Items</th>
-                  <th className="pb-3 px-4">Payment</th>
-                  <th className="pb-3 px-4">Fulfillment</th>
-                  <th className="pb-3 pl-4 text-right">Total</th>
+                <tr className="border-b border-slate-100 text-slate-400 font-bold uppercase tracking-wider text-[11px]">
+                  <th className="pb-3.5 pr-4">Order</th>
+                  <th className="pb-3.5 px-4">Customer</th>
+                  <th className="pb-3.5 px-4">Date</th>
+                  <th className="pb-3.5 px-4">Items</th>
+                  <th className="pb-3.5 px-4">Payment</th>
+                  <th className="pb-3.5 px-4">Fulfillment</th>
+                  <th className="pb-3.5 pl-4 text-right">Total</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
@@ -102,7 +85,7 @@ const RecentOrdersTable = ({ orders = [] }) => {
                         {order.orderNumber}
                       </td>
                       <td className="py-3.5 px-4">
-                        <p className="font-semibold text-slate-800 truncate max-w-[180px]">
+                        <p className="font-bold text-slate-800 truncate max-w-[180px]">
                           {order.customer?.name || 'Guest Customer'}
                         </p>
                         <p className="text-[11px] text-slate-400 truncate max-w-[180px]">
@@ -116,14 +99,14 @@ const RecentOrdersTable = ({ orders = [] }) => {
                         {order.items?.length || 1} {order.items?.length === 1 ? 'item' : 'items'}
                       </td>
                       <td className="py-3.5 px-4 whitespace-nowrap">
-                        <StatusBadge status={order.financialStatus} />
+                        <Badge status={order.financialStatus} />
                       </td>
                       <td className="py-3.5 px-4 whitespace-nowrap">
-                        <span className="text-[11px] font-medium text-slate-600 capitalize">
+                        <span className="text-[11px] font-semibold text-slate-600 capitalize">
                           {order.fulfillmentStatus || 'Fulfilled'}
                         </span>
                       </td>
-                      <td className="py-3.5 pl-4 text-right font-bold text-slate-900 whitespace-nowrap">
+                      <td className="py-3.5 pl-4 text-right font-extrabold text-slate-900 whitespace-nowrap">
                         ${(order.totalAmount || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                       </td>
                     </tr>

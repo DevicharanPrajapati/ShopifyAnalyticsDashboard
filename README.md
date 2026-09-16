@@ -40,38 +40,35 @@ SopifyStoreAnalytics/
 ├── assignment.txt                    # Project assignment requirements
 ├── .gitignore                        # Root git ignore
 ├── README.md                         # Project documentation
+├── client/                           # Frontend React 19 + Vite App
+│   ├── src/
+│   │   ├── components/
+│   │   │   ├── common/               # Badge, SkeletonLoader
+│   │   │   └── layout/               # AppLayout, Sidebar, Navbar, Footer
+│   │   ├── features/                 # Modular feature-based components
+│   │   │   ├── analytics/components/ # MetricCard, DateFilter, RevenueChart, TopProducts, OrderStatusChart
+│   │   │   └── orders/components/    # RecentOrdersTable
+│   │   ├── pages/                    # Dedicated page views
+│   │   │   ├── DashboardPage.jsx     # Main Analytics Dashboard (/)
+│   │   │   ├── OrdersPage.jsx        # Full Orders Explorer (/orders)
+│   │   │   ├── ProductsPage.jsx      # Products Catalog (/products)
+│   │   │   └── SettingsPage.jsx      # System & Health Settings (/settings)
+│   │   ├── redux/                    # Redux Toolkit store & slices (analytics, ui)
+│   │   └── services/api.js           # Axios API client
+│   └── vite.config.js                # Vite & Tailwind CSS v4 setup
 └── server/                           # Backend API
     ├── .env                          # Environment variables (git-ignored)
     ├── .env.example                  # Environment template
-    ├── .gitignore                    # Server git ignore
     ├── package.json                  # Backend dependencies & scripts
-    ├── README.md                     # Backend API documentation
     └── src/
         ├── app.js                    # Express app configuration & middleware
         ├── server.js                 # HTTP server entry point & DB connection
-        ├── config/
-        │   └── db.js                 # MongoDB connection handler
-        ├── controllers/
-        │   ├── analyticsController.js# Dashboard aggregation handlers
-        │   ├── orderController.js    # Order endpoints
-        │   └── productController.js  # Product endpoints
-        ├── middlewares/
-        │   └── errorHandler.js       # Central error & 404 handler
-        ├── models/
-        │   ├── Order.js              # Order schema & indexes
-        │   ├── Product.js            # Product catalog schema
-        │   └── VisitorTraffic.js     # Daily visitor count for conversion rate
-        ├── routes/
-        │   ├── analyticsRoutes.js    # /api/analytics
-        │   ├── orderRoutes.js        # /api/orders
-        │   ├── productRoutes.js      # /api/products
-        │   └── index.js              # Central API router & health check
-        ├── seeds/
-        │   └── seedData.js           # 90-day realistic Shopify sales generator
-        ├── services/
-        │   └── analyticsService.js   # MongoDB aggregation pipelines
-        └── utils/
-            └── dateHelper.js         # Date range parsing & percentage math
+        ├── config/db.js              # MongoDB connection handler
+        ├── controllers/              # Analytics, Orders, Products controllers
+        ├── models/                   # Order, Product, VisitorTraffic Mongoose models
+        ├── routes/                   # API routes
+        ├── seeds/seedData.js         # 30-day realistic Shopify sales seeder
+        └── services/analyticsService.js # MongoDB aggregation pipelines
 ```
 
 ---
