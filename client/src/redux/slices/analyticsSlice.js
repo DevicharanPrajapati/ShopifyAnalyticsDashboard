@@ -9,7 +9,11 @@ export const fetchDashboardData = createAsyncThunk(
       const response = await analyticsAPI.getDashboardData(filterParams);
       return response.data.data;
     } catch (error) {
-      const message = error.response?.data?.message || error.message || 'Failed to fetch analytics data';
+      const message =
+        error.friendlyMessage ||
+        error.response?.data?.message ||
+        error.message ||
+        'Failed to fetch analytics data';
       return rejectWithValue(message);
     }
   }

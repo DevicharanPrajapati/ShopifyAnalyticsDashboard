@@ -3,7 +3,6 @@ import {
   Package,
   Search,
   RefreshCw,
-  AlertCircle,
   TrendingUp,
   Layers,
   Boxes,
@@ -28,6 +27,7 @@ import {
 import { productsAPI, analyticsAPI } from '../services/api';
 import Badge from '../components/common/Badge';
 import DateFilter from '../features/analytics/components/DateFilter';
+import ErrorMessage from '../components/common/ErrorMessage';
 
 const CATEGORY_COLORS = [
   '#10b981', // Emerald
@@ -96,7 +96,7 @@ const ProductsPage = () => {
         setProducts(res.data.data.products);
       }
     } catch (err) {
-      setError(err.response?.data?.message || err.message || 'Failed to fetch products');
+      setError(err.friendlyMessage || err.response?.data?.message || err.message || 'Failed to fetch products');
     } finally {
       setLoading(false);
     }
@@ -441,11 +441,18 @@ const ProductsPage = () => {
         </div>
       )}
 
+      {/* Error State */}
       {error && (
-        <div className="p-4 rounded-2xl bg-rose-50 border border-rose-200 text-rose-800 flex items-center space-x-2 text-xs">
-          <AlertCircle className="w-4 h-4 text-rose-600 flex-shrink-0" />
-          <span>{error}</span>
-        </div>
+        <ErrorMessage
+          title="Unable to Load Products"
+          message={error}
+          onRetry={() => {
+            fetchProducts();
+            fetchProductStats();
+          }}
+          isRetrying={loading || statsLoading}
+          onDismiss={() => setError(null)}
+        />
       )}
 
       {/* Products Grid */}

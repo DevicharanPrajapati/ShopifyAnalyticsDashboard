@@ -5,7 +5,6 @@ import {
   ChevronLeft,
   ChevronRight,
   RefreshCw,
-  AlertCircle,
   TrendingUp,
   PackageCheck,
   IndianRupee,
@@ -26,6 +25,7 @@ import {
 import { ordersAPI, analyticsAPI } from '../services/api';
 import Badge from '../components/common/Badge';
 import DateFilter from '../features/analytics/components/DateFilter';
+import ErrorMessage from '../components/common/ErrorMessage';
 
 const CustomTierTooltip = ({ active, payload }) => {
   if (active && payload && payload.length) {
@@ -87,7 +87,7 @@ const OrdersPage = () => {
         setTotalPages(res.data.data.pagination.pages || 1);
       }
     } catch (err) {
-      setError(err.response?.data?.message || err.message || 'Failed to load orders');
+      setError(err.friendlyMessage || err.response?.data?.message || err.message || 'Failed to load orders');
     } finally {
       setLoading(false);
     }
@@ -435,11 +435,18 @@ const OrdersPage = () => {
         </div>
       )}
 
+      {/* Error State */}
       {error && (
-        <div className="p-4 rounded-2xl bg-rose-50 border border-rose-200 text-rose-800 flex items-center space-x-2 text-xs">
-          <AlertCircle className="w-4 h-4 text-rose-600 flex-shrink-0" />
-          <span>{error}</span>
-        </div>
+        <ErrorMessage
+          title="Unable to Load Orders"
+          message={error}
+          onRetry={() => {
+            fetchOrders();
+            fetchOrderStats();
+          }}
+          isRetrying={loading || statsLoading}
+          onDismiss={() => setError(null)}
+        />
       )}
 
       {/* Orders List / Table */}
