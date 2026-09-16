@@ -15,6 +15,8 @@ export const analyticsAPI = {
   getTopProducts: (params = {}) => api.get('/analytics/top-products', { params }),
   getRecentOrders: (params = {}) => api.get('/analytics/recent-orders', { params }),
   getStatusBreakdown: (params = {}) => api.get('/analytics/status-breakdown', { params }),
+  getOrdersStats: (params = {}) => api.get('/analytics/orders-stats', { params }),
+  getProductsStats: (params = {}) => api.get('/analytics/products-stats', { params }),
 };
 
 export const ordersAPI = {

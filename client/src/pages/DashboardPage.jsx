@@ -1,7 +1,6 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import {
-  DollarSign,
   ShoppingCart,
   Percent,
   TrendingUp,
@@ -11,6 +10,8 @@ import {
 import DateFilter from '../features/analytics/components/DateFilter';
 import MetricCard from '../features/analytics/components/MetricCard';
 import RevenueChart from '../features/analytics/components/RevenueChart';
+import TrafficConversionChart from '../features/analytics/components/TrafficConversionChart';
+import CategorySalesChart from '../features/analytics/components/CategorySalesChart';
 import TopProducts from '../features/analytics/components/TopProducts';
 import OrderStatusChart from '../features/analytics/components/OrderStatusChart';
 import RecentOrdersTable from '../features/orders/components/RecentOrdersTable';
@@ -22,25 +23,23 @@ const DashboardPage = () => {
   const {
     overview,
     revenueTrend,
+    trafficTrend,
+    categorySales,
     topProducts,
     recentOrders,
     statusBreakdown,
     dateFilter,
-    activeStore,
-    availableStores,
     loading,
     error,
   } = useSelector((state) => state.analytics);
 
-  const currentStore = availableStores.find((s) => s.id === activeStore) || availableStores[0];
-
   const loadData = () => {
-    dispatch(fetchDashboardData({ ...dateFilter, storeId: activeStore }));
+    dispatch(fetchDashboardData(dateFilter));
   };
 
   useEffect(() => {
     loadData();
-  }, [dispatch, dateFilter.preset, dateFilter.startDate, dateFilter.endDate, activeStore]);
+  }, [dispatch, dateFilter.preset, dateFilter.startDate, dateFilter.endDate]);
 
   const handleFilterChange = (newFilter) => {
     dispatch(setDateFilter(newFilter));
@@ -57,7 +56,7 @@ const DashboardPage = () => {
             Store Performance
           </h1>
           <p className="text-xs sm:text-sm text-slate-500 mt-1">
-            Real-time analytics for <span className="font-bold text-slate-700">{currentStore.name}</span> ({currentStore.owner})
+            Real-time sales trends, conversions, and customer analytics
           </p>
         </div>
       </div>
@@ -133,10 +132,16 @@ const DashboardPage = () => {
             />
           </div>
 
-          {/* Revenue Over Time Chart */}
+          {/* Chart 1: Revenue & Sales Over Time (Area Chart) */}
           <RevenueChart data={revenueTrend} />
 
-          {/* Split Row: Top Products + Order Status Distribution */}
+          {/* Charts Row 2: Traffic vs Conversion (Bar Chart) + Category Share (Horizontal Bar Chart) */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <TrafficConversionChart data={trafficTrend} />
+            <CategorySalesChart data={categorySales} />
+          </div>
+
+          {/* Charts Row 3: Top Products Leaderboard + Order Payment Status (Donut Chart) */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             <div className="lg:col-span-2">
               <TopProducts products={topProducts} />

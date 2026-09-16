@@ -4,14 +4,9 @@ import { analyticsAPI } from '../../services/api';
 // Async thunk to fetch complete dashboard analytics
 export const fetchDashboardData = createAsyncThunk(
   'analytics/fetchDashboardData',
-  async (filterParams, { getState, rejectWithValue }) => {
+  async (filterParams, { rejectWithValue }) => {
     try {
-      const state = getState();
-      const storeId = filterParams?.storeId || state.analytics.activeStore || 'store-1';
-      const response = await analyticsAPI.getDashboardData({
-        ...filterParams,
-        storeId,
-      });
+      const response = await analyticsAPI.getDashboardData(filterParams);
       return response.data.data;
     } catch (error) {
       const message = error.response?.data?.message || error.message || 'Failed to fetch analytics data';
@@ -21,23 +16,6 @@ export const fetchDashboardData = createAsyncThunk(
 );
 
 const initialState = {
-  activeStore: 'store-1',
-  availableStores: [
-    {
-      id: 'store-1',
-      name: 'Apex Retailers',
-      owner: 'Devicharan Prajapati',
-      initials: 'DP',
-      role: 'Store Owner',
-    },
-    {
-      id: 'store-2',
-      name: 'Urban Gadgets',
-      owner: 'Rohit Sharma',
-      initials: 'RS',
-      role: 'Store Owner',
-    },
-  ],
   overview: {
     current: {
       totalRevenue: 0,
@@ -61,6 +39,8 @@ const initialState = {
     },
   },
   revenueTrend: [],
+  trafficTrend: [],
+  categorySales: [],
   topProducts: [],
   recentOrders: [],
   statusBreakdown: [],
@@ -77,9 +57,6 @@ const analyticsSlice = createSlice({
   name: 'analytics',
   initialState,
   reducers: {
-    setActiveStore: (state, action) => {
-      state.activeStore = action.payload;
-    },
     setDateFilter: (state, action) => {
       state.dateFilter = { ...state.dateFilter, ...action.payload };
     },
@@ -98,6 +75,8 @@ const analyticsSlice = createSlice({
         if (action.payload) {
           state.overview = action.payload.overview || state.overview;
           state.revenueTrend = action.payload.revenueTrend || [];
+          state.trafficTrend = action.payload.trafficTrend || [];
+          state.categorySales = action.payload.categorySales || [];
           state.topProducts = action.payload.topProducts || [];
           state.recentOrders = action.payload.recentOrders || [];
           state.statusBreakdown = action.payload.statusBreakdown || [];
@@ -110,6 +89,6 @@ const analyticsSlice = createSlice({
   },
 });
 
-export const { setActiveStore, setDateFilter, clearError } = analyticsSlice.actions;
+export const { setDateFilter, clearError } = analyticsSlice.actions;
 
 export default analyticsSlice.reducer;

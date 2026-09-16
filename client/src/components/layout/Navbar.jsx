@@ -1,30 +1,22 @@
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import {
-  Menu,
-  RefreshCw,
-  Search,
-  Bell,
-  ShoppingBag,
-} from 'lucide-react';
+import { Menu, RefreshCw } from 'lucide-react';
 import { toggleSidebar } from '../../redux/slices/uiSlice.js';
 import { fetchDashboardData } from '../../redux/slices/analyticsSlice.js';
 
 const Navbar = () => {
   const dispatch = useDispatch();
-  const { loading, dateFilter, activeStore, availableStores } = useSelector((state) => state.analytics);
-
-  const currentStore = availableStores.find((s) => s.id === activeStore) || availableStores[0];
+  const { loading, dateFilter } = useSelector((state) => state.analytics);
 
   const handleRefresh = () => {
-    dispatch(fetchDashboardData({ ...dateFilter, storeId: activeStore }));
+    dispatch(fetchDashboardData(dateFilter));
   };
 
   return (
     <header className="bg-white/95 backdrop-blur-md border-b border-slate-200 sticky top-0 z-20 shadow-xs">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
-          {/* Left: Mobile Sidebar Trigger & Breadcrumbs */}
+          {/* Left: Mobile Sidebar Trigger & Store Identity */}
           <div className="flex items-center space-x-3 min-w-0">
             <button
               onClick={() => dispatch(toggleSidebar())}
@@ -34,10 +26,9 @@ const Navbar = () => {
               <Menu className="w-5 h-5" />
             </button>
 
-            {/* Store Badge Display */}
             <div className="flex items-center space-x-2">
               <span className="font-extrabold text-slate-900 text-sm sm:text-base tracking-tight truncate">
-                {currentStore.name}
+                Apex Retailers
               </span>
               <span className="hidden sm:inline-flex items-center space-x-1 px-2 py-0.5 rounded-full bg-emerald-50 border border-emerald-200 text-[10px] font-bold text-emerald-700">
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
@@ -61,14 +52,14 @@ const Navbar = () => {
 
             <div className="h-4 w-px bg-slate-200"></div>
 
-            {/* Active User Avatar */}
+            {/* User Avatar */}
             <div className="flex items-center space-x-2 p-1 rounded-xl">
               <div className="w-8 h-8 rounded-full bg-emerald-600 text-white font-bold text-xs flex items-center justify-center shadow-xs">
-                {currentStore.initials}
+                DP
               </div>
               <div className="hidden md:block text-left text-xs pr-1">
-                <p className="font-bold text-slate-800 leading-tight">{currentStore.owner}</p>
-                <p className="text-slate-400 text-[10px] leading-tight">{currentStore.role}</p>
+                <p className="font-bold text-slate-800 leading-tight">Devicharan Prajapati</p>
+                <p className="text-slate-400 text-[10px] leading-tight">Store Owner</p>
               </div>
             </div>
           </div>

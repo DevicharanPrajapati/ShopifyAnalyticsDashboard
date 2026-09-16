@@ -1,18 +1,86 @@
 import React, { useState, useEffect } from 'react';
-import { useSelector } from 'react-redux';
-import { Package, Search, RefreshCw, AlertCircle } from 'lucide-react';
-import { productsAPI } from '../services/api';
+import {
+  Package,
+  Search,
+  RefreshCw,
+  AlertCircle,
+  TrendingUp,
+  Layers,
+  Boxes,
+  PieChart as PieIcon,
+  BarChart2,
+  CheckCircle2,
+} from 'lucide-react';
+import {
+  PieChart,
+  Pie,
+  Cell,
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip as RechartsTooltip,
+  ResponsiveContainer,
+  Legend,
+} from 'recharts';
+import { productsAPI, analyticsAPI } from '../services/api';
 import Badge from '../components/common/Badge';
+import DateFilter from '../features/analytics/components/DateFilter';
+
+const CATEGORY_COLORS = [
+  '#10b981', // Emerald
+  '#06b6d4', // Cyan
+  '#6366f1', // Indigo
+  '#f59e0b', // Amber
+  '#ec4899', // Pink
+  '#8b5cf6', // Purple
+  '#14b8a6', // Teal
+];
+
+const CustomCategoryTooltip = ({ active, payload }) => {
+  if (active && payload && payload.length) {
+    const data = payload[0].payload;
+    return (
+      <div className="bg-slate-900 text-white p-2.5 rounded-xl shadow-xl text-xs border border-slate-800">
+        <p className="font-bold text-white border-b border-slate-800 pb-1 mb-1">{data.category}</p>
+        <p className="text-emerald-400 font-bold">Revenue: ₹{data.revenue?.toLocaleString('en-IN')}</p>
+        <p className="text-slate-300">Units Sold: {data.unitsSold}</p>
+        <p className="text-slate-400">Share: {data.percentage}%</p>
+      </div>
+    );
+  }
+  return null;
+};
+
+const CustomStockTooltip = ({ active, payload, label }) => {
+  if (active && payload && payload.length) {
+    const data = payload[0].payload;
+    return (
+      <div className="bg-slate-900 text-white p-2.5 rounded-xl shadow-xl text-xs border border-slate-800">
+        <p className="font-bold text-white border-b border-slate-800 pb-1 mb-1">{data.title}</p>
+        <p className="text-emerald-400 font-bold">Units Sold: {data.unitsSold}</p>
+        <p className="text-slate-300">In Stock: {data.stockRemaining}</p>
+        <p className="text-slate-400">Sales Value: ₹{data.revenue?.toLocaleString('en-IN')}</p>
+      </div>
+    );
+  }
+  return null;
+};
 
 const ProductsPage = () => {
-  const { activeStore, availableStores } = useSelector((state) => state.analytics);
-  const currentStore = availableStores.find((s) => s.id === activeStore) || availableStores[0];
-
   const [products, setProducts] = useState([]);
+  const [productStats, setProductStats] = useState({ categoryShare: [], stockComparison: [] });
   const [loading, setLoading] = useState(true);
+  const [statsLoading, setStatsLoading] = useState(true);
   const [error, setError] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('');
+  const [dateFilter, setDateFilter] = useState({
+    preset: '30d',
+    startDate: '',
+    endDate: '',
+  });
 
   const fetchProducts = async () => {
     try {
@@ -22,7 +90,6 @@ const ProductsPage = () => {
         search: searchQuery || undefined,
         category: selectedCategory || undefined,
         limit: 50,
-        storeId: activeStore,
       });
       if (res.data.success) {
         setProducts(res.data.data.products);
@@ -34,16 +101,44 @@ const ProductsPage = () => {
     }
   };
 
+  const fetchProductStats = async () => {
+    try {
+      setStatsLoading(true);
+      const res = await analyticsAPI.getProductsStats(dateFilter);
+      if (res.data.success) {
+        setProductStats(res.data.data);
+      }
+    } catch (err) {
+      console.error('Failed to fetch product stats:', err);
+    } finally {
+      setStatsLoading(false);
+    }
+  };
+
   useEffect(() => {
     fetchProducts();
-  }, [selectedCategory, activeStore]);
+  }, [selectedCategory]);
+
+  useEffect(() => {
+    fetchProductStats();
+  }, [dateFilter.preset, dateFilter.startDate, dateFilter.endDate]);
 
   const handleSearch = (e) => {
     e.preventDefault();
     fetchProducts();
   };
 
+  const handleFilterChange = (newFilter) => {
+    setDateFilter(newFilter);
+  };
+
   const categories = ['', 'Electronics', 'Accessories', 'Apparel', 'Footwear', 'Home & Kitchen', 'Bags'];
+
+  // Summary Metrics
+  const totalCatalogCount = products.length;
+  const totalStockCount = products.reduce((sum, p) => sum + (p.inventoryQuantity || 0), 0);
+  const totalUnitsSold = productStats.categoryShare?.reduce((sum, c) => sum + (c.unitsSold || 0), 0) || 0;
+  const topCategory = productStats.categoryShare?.[0] || null;
 
   return (
     <div className="space-y-6">
@@ -51,24 +146,200 @@ const ProductsPage = () => {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
           <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
-            Products Catalog
+            Products & Inventory
           </h1>
           <p className="text-xs sm:text-sm text-slate-500 mt-1">
-            Inventory & pricing for <span className="font-bold text-slate-700">{currentStore.name}</span> ({currentStore.owner})
+            Catalog inventory, stock velocity, and category performance for <span className="font-bold text-slate-700">Apex Retailers</span>
           </p>
         </div>
 
         <button
-          onClick={fetchProducts}
-          disabled={loading}
+          onClick={() => {
+            fetchProducts();
+            fetchProductStats();
+          }}
+          disabled={loading || statsLoading}
           className="inline-flex items-center self-start sm:self-auto px-3.5 py-2 text-xs font-bold text-slate-700 bg-white border border-slate-200 hover:bg-slate-50 active:scale-95 rounded-xl transition-all cursor-pointer shadow-2xs disabled:opacity-50"
         >
-          <RefreshCw className={`w-3.5 h-3.5 mr-1.5 text-slate-600 ${loading ? 'animate-spin text-emerald-600' : ''}`} />
+          <RefreshCw
+            className={`w-3.5 h-3.5 mr-1.5 text-slate-600 ${
+              loading || statsLoading ? 'animate-spin text-emerald-600' : ''
+            }`}
+          />
           <span>Refresh</span>
         </button>
       </div>
 
-      {/* Filters & Search */}
+      {/* Date Range Filter for Product Analytics */}
+      <DateFilter
+        activePreset={dateFilter.preset}
+        startDate={dateFilter.startDate}
+        endDate={dateFilter.endDate}
+        onFilterChange={handleFilterChange}
+      />
+
+      {/* Products KPI Summary Cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200 shadow-xs">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">Catalog Items</span>
+            <div className="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center">
+              <Boxes className="w-4 h-4" />
+            </div>
+          </div>
+          <p className="text-2xl sm:text-3xl font-extrabold text-slate-900 mt-2">{totalCatalogCount}</p>
+          <p className="text-[11px] text-slate-400 mt-1">Active live SKUs in catalog</p>
+        </div>
+
+        <div className="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200 shadow-xs">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">Units in Stock</span>
+            <div className="w-8 h-8 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center">
+              <Layers className="w-4 h-4" />
+            </div>
+          </div>
+          <p className="text-2xl sm:text-3xl font-extrabold text-slate-900 mt-2">{totalStockCount}</p>
+          <p className="text-[11px] text-slate-400 mt-1">Total physical inventory units</p>
+        </div>
+
+        <div className="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200 shadow-xs">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">Units Sold</span>
+            <div className="w-8 h-8 rounded-lg bg-purple-50 text-purple-600 flex items-center justify-center">
+              <TrendingUp className="w-4 h-4" />
+            </div>
+          </div>
+          <p className="text-2xl sm:text-3xl font-extrabold text-slate-900 mt-2">{totalUnitsSold}</p>
+          <p className="text-[11px] text-slate-400 mt-1">Volume sold in selected period</p>
+        </div>
+
+        <div className="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200 shadow-xs">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">Top Category</span>
+            <div className="w-8 h-8 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center">
+              <CheckCircle2 className="w-4 h-4" />
+            </div>
+          </div>
+          <p className="text-xl sm:text-2xl font-extrabold text-slate-900 mt-2 truncate">
+            {topCategory?.category || 'General'}
+          </p>
+          <p className="text-[11px] text-slate-400 mt-1">
+            {topCategory ? `₹${(topCategory.revenue || 0).toLocaleString('en-IN')} (${topCategory.percentage}%)` : 'No sales yet'}
+          </p>
+        </div>
+      </div>
+
+      {/* Analytics Charts: Category Share & Stock vs Units Sold */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Chart 1: Category Sales Share (Donut Chart) */}
+        <div className="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200 shadow-xs flex flex-col justify-between min-w-0">
+          <div>
+            <div className="flex items-center space-x-2 mb-4">
+              <PieIcon className="w-5 h-5 text-emerald-600 flex-shrink-0" />
+              <div>
+                <h3 className="text-sm sm:text-base font-bold text-slate-900">Category Sales Share</h3>
+                <p className="text-[11px] text-slate-500">Revenue split across product lines</p>
+              </div>
+            </div>
+
+            <div className="w-full h-56 sm:h-64 relative min-w-0 overflow-hidden">
+              {productStats.categoryShare?.length === 0 ? (
+                <div className="w-full h-full flex items-center justify-center text-slate-400 text-xs">
+                  No category sales recorded
+                </div>
+              ) : (
+                <ResponsiveContainer width="100%" height="100%">
+                  <PieChart>
+                    <RechartsTooltip content={<CustomCategoryTooltip />} />
+                    <Pie
+                      data={productStats.categoryShare}
+                      dataKey="revenue"
+                      nameKey="category"
+                      cx="50%"
+                      cy="50%"
+                      innerRadius={50}
+                      outerRadius={80}
+                      paddingAngle={3}
+                    >
+                      {productStats.categoryShare.map((entry, index) => (
+                        <Cell
+                          key={`cat-cell-${index}`}
+                          fill={CATEGORY_COLORS[index % CATEGORY_COLORS.length]}
+                        />
+                      ))}
+                    </Pie>
+                  </PieChart>
+                </ResponsiveContainer>
+              )}
+            </div>
+
+            {/* Category Legend */}
+            <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-4 mt-2">
+              {productStats.categoryShare?.map((item, index) => (
+                <div key={item.category} className="flex items-center space-x-1.5 text-xs">
+                  <span
+                    className="w-2.5 h-2.5 rounded-full"
+                    style={{ backgroundColor: CATEGORY_COLORS[index % CATEGORY_COLORS.length] }}
+                  ></span>
+                  <span className="text-slate-700 font-medium">{item.category}</span>
+                  <span className="text-slate-400 font-semibold">({item.percentage}%)</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Chart 2: Inventory Stock vs Units Sold (Bar Chart) */}
+        <div className="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200 shadow-xs min-w-0">
+          <div className="flex items-center space-x-2 mb-4">
+            <BarChart2 className="w-5 h-5 text-emerald-600 flex-shrink-0" />
+            <div>
+              <h3 className="text-sm sm:text-base font-bold text-slate-900">Inventory Stock vs Units Sold</h3>
+              <p className="text-[11px] text-slate-500">Sales velocity vs available shelf stock</p>
+            </div>
+          </div>
+
+          <div className="w-full h-56 sm:h-64 min-w-0 overflow-hidden">
+            {productStats.stockComparison?.length === 0 ? (
+              <div className="w-full h-full flex items-center justify-center text-slate-400 text-xs">
+                No product comparison data available
+              </div>
+            ) : (
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart
+                  data={productStats.stockComparison}
+                  margin={{ top: 10, right: 10, left: -20, bottom: 25 }}
+                >
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
+                  <XAxis
+                    dataKey="title"
+                    tickLine={false}
+                    axisLine={{ stroke: '#e2e8f0' }}
+                    tick={{ fill: '#64748b', fontSize: 10 }}
+                    angle={-15}
+                    textAnchor="end"
+                  />
+                  <YAxis
+                    tickLine={false}
+                    axisLine={{ stroke: '#e2e8f0' }}
+                    tick={{ fill: '#64748b', fontSize: 10 }}
+                  />
+                  <RechartsTooltip content={<CustomStockTooltip />} />
+                  <Legend
+                    verticalAlign="top"
+                    align="right"
+                    wrapperStyle={{ paddingBottom: '10px', fontSize: '11px' }}
+                  />
+                  <Bar dataKey="unitsSold" name="Units Sold" fill="#10b981" radius={[4, 4, 0, 0]} />
+                  <Bar dataKey="stockRemaining" name="In Stock" fill="#94a3b8" radius={[4, 4, 0, 0]} />
+                </BarChart>
+              </ResponsiveContainer>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* Product Catalog Filters & Search */}
       <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-2xs flex flex-col md:flex-row items-center justify-between gap-3">
         {/* Category Pills */}
         <div className="flex items-center gap-1.5 overflow-x-auto w-full md:w-auto pb-1 md:pb-0 scrollbar-none">
@@ -124,7 +395,7 @@ const ProductsPage = () => {
       ) : products.length === 0 ? (
         <div className="p-12 text-center text-slate-400 text-xs bg-white rounded-2xl border border-slate-200">
           <Package className="w-8 h-8 mx-auto mb-2 opacity-30" />
-          No products found for {currentStore.name}
+          No products found matching your search criteria
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
@@ -167,9 +438,9 @@ const ProductsPage = () => {
                   <div className="pt-2 border-t border-slate-100 flex items-center justify-between">
                     <div>
                       <p className="text-base font-extrabold text-slate-900">
-                        ₹{product.price.toLocaleString('en-IN')}
+                        ₹{product.price?.toLocaleString('en-IN')}
                       </p>
-                      {margin && (
+                      {margin !== null && (
                         <p className="text-[10px] text-emerald-600 font-bold">
                           {margin}% profit margin
                         </p>

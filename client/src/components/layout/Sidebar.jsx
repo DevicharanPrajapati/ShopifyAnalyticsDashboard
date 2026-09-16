@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import {
@@ -8,12 +8,9 @@ import {
   X,
   ShoppingBag,
   ChevronRight,
-  Store,
-  Check,
-  ChevronDown,
+  TrendingUp,
 } from 'lucide-react';
 import { setSidebarOpen } from '../../redux/slices/uiSlice.js';
-import { setActiveStore, fetchDashboardData } from '../../redux/slices/analyticsSlice.js';
 
 const NAV_ITEMS = [
   { name: 'Dashboard', path: '/', icon: LayoutDashboard },
@@ -25,21 +22,10 @@ const Sidebar = () => {
   const dispatch = useDispatch();
   const location = useLocation();
   const { sidebarOpen } = useSelector((state) => state.ui);
-  const { overview, activeStore, availableStores, dateFilter } = useSelector(
-    (state) => state.analytics
-  );
-  const [storeMenuOpen, setStoreMenuOpen] = useState(false);
-
-  const currentStore = availableStores.find((s) => s.id === activeStore) || availableStores[0];
+  const { overview } = useSelector((state) => state.analytics);
 
   const closeSidebar = () => {
     dispatch(setSidebarOpen(false));
-  };
-
-  const handleSwitchStore = (storeId) => {
-    dispatch(setActiveStore(storeId));
-    dispatch(fetchDashboardData({ ...dateFilter, storeId }));
-    setStoreMenuOpen(false);
   };
 
   const navContent = (
@@ -70,47 +56,20 @@ const Sidebar = () => {
         </button>
       </div>
 
-      {/* Interactive Store / User Switcher Dropdown */}
-      <div className="p-3.5 border-b border-slate-100 relative">
-        <label className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block mb-1.5 px-1">
-          Active Store (Switch User)
-        </label>
-        <button
-          onClick={() => setStoreMenuOpen(!storeMenuOpen)}
-          className="w-full p-2.5 rounded-xl bg-slate-50 hover:bg-slate-100/90 border border-slate-200 flex items-center justify-between transition-colors cursor-pointer text-left"
-        >
+      {/* Store Identity Card (Single User - No Dropdown) */}
+      <div className="p-4 border-b border-slate-100">
+        <div className="p-3 rounded-xl bg-slate-50 border border-slate-200/80 flex items-center justify-between">
           <div className="flex items-center space-x-2.5 min-w-0">
-            <div className="w-7 h-7 rounded-lg bg-emerald-600 text-white font-bold text-xs flex items-center justify-center flex-shrink-0">
-              {currentStore.initials}
+            <div className="w-8 h-8 rounded-lg bg-emerald-600 text-white font-bold text-xs flex items-center justify-center flex-shrink-0 shadow-xs">
+              DP
             </div>
             <div className="min-w-0">
-              <p className="text-xs font-bold text-slate-900 truncate">{currentStore.name}</p>
-              <p className="text-[10px] text-slate-500 truncate">{currentStore.owner}</p>
+              <p className="text-xs font-bold text-slate-900 truncate">Apex Retailers</p>
+              <p className="text-[10px] text-slate-500 truncate">Devicharan Prajapati</p>
             </div>
           </div>
-          <ChevronDown className={`w-4 h-4 text-slate-400 transition-transform ${storeMenuOpen ? 'rotate-180' : ''}`} />
-        </button>
-
-        {/* Dropdown Menu */}
-        {storeMenuOpen && (
-          <div className="absolute left-3.5 right-3.5 top-full mt-1 bg-white border border-slate-200 rounded-xl shadow-lg z-30 overflow-hidden py-1">
-            {availableStores.map((store) => (
-              <button
-                key={store.id}
-                onClick={() => handleSwitchStore(store.id)}
-                className={`w-full px-3 py-2 text-left text-xs flex items-center justify-between hover:bg-slate-50 transition-colors cursor-pointer ${
-                  activeStore === store.id ? 'bg-emerald-50/70 text-emerald-700 font-bold' : 'text-slate-700 font-medium'
-                }`}
-              >
-                <div>
-                  <p className="leading-tight">{store.name}</p>
-                  <p className="text-[10px] text-slate-400 leading-tight">{store.owner}</p>
-                </div>
-                {activeStore === store.id && <Check className="w-4 h-4 text-emerald-600" />}
-              </button>
-            ))}
-          </div>
-        )}
+          <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse flex-shrink-0" title="Store Live"></span>
+        </div>
       </div>
 
       {/* Navigation Links */}
@@ -153,11 +112,11 @@ const Sidebar = () => {
         })}
       </div>
 
-      {/* Bottom Store Status Badge */}
+      {/* Currency Footer Pill */}
       <div className="p-3.5 border-t border-slate-100 mt-auto bg-slate-50/70">
         <div className="flex items-center justify-between text-xs">
-          <span className="text-slate-500 font-medium">Currency</span>
-          <span className="font-bold text-slate-800 bg-white px-2 py-0.5 rounded border border-slate-200">
+          <span className="text-slate-500 font-medium">Store Currency</span>
+          <span className="font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
             INR (₹)
           </span>
         </div>
@@ -167,7 +126,7 @@ const Sidebar = () => {
 
   return (
     <>
-      {/* Desktop Fixed Sidebar (Never scrolls out of view) */}
+      {/* Desktop Fixed Sidebar (Rock-solid on screen scroll) */}
       <aside className="hidden lg:block fixed inset-y-0 left-0 w-64 z-30 overflow-y-auto">
         {navContent}
       </aside>
