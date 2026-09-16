@@ -13,4 +13,6 @@ app.listen(PORT, HOST, () => {
 });
 
 // Connect to MongoDB asynchronously without blocking port binding
-connectDB();
+connectDB().catch((error) => {
+  console.error('❌ MongoDB Connection Error:', error.message);
+});
