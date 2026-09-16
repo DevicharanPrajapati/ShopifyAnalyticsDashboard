@@ -298,30 +298,14 @@ const RevenueChart = ({
             </button>
           </div>
 
-          {/* Shopify-Style Direct Metric Selector Pills */}
-          <div className="inline-flex bg-slate-100 p-1 rounded-xl overflow-x-auto max-w-full">
-            {Object.entries(METRIC_CONFIG).map(([metricKey, cfg]) => {
-              const Icon = cfg.icon;
-              const isSelected = selectedMetric === metricKey;
-
-              return (
-                <button
-                  key={metricKey}
-                  onClick={() => onMetricChange && onMetricChange(metricKey)}
-                  className={`flex items-center space-x-1.5 px-3 py-1.5 text-xs font-bold rounded-lg transition-all cursor-pointer whitespace-nowrap active:scale-95 ${
-                    isSelected
-                      ? 'bg-white text-slate-900 shadow-xs ring-1 ring-slate-200/80'
-                      : 'text-slate-500 hover:text-slate-900 hover:bg-slate-200/60'
-                  }`}
-                >
-                  <Icon
-                    className="w-3.5 h-3.5"
-                    style={{ color: isSelected ? cfg.stroke : undefined }}
-                  />
-                  <span>{cfg.shortLabel}</span>
-                </button>
-              );
-            })}
+          {/* Selected Card Indicator (Name of currently selected KPI card) */}
+          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-slate-50 border border-slate-200 text-xs font-bold text-slate-800 shadow-2xs">
+            <span
+              className="w-2 h-2 rounded-full"
+              style={{ backgroundColor: activeConfig.stroke }}
+            />
+            <span className="text-slate-400 font-medium">Selected:</span>
+            <span className="text-slate-900 font-extrabold">{activeConfig.label}</span>
           </div>
         </div>
       </div>
