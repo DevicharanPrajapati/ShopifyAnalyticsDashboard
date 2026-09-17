@@ -22,16 +22,16 @@ const ErrorMessage = ({
       role="alert"
       className={`p-4 sm:p-5 rounded-2xl border transition-all duration-200 shadow-2xs ${
         isNetworkOrColdStart
-          ? 'bg-amber-50/90 border-amber-200 text-amber-900'
-          : 'bg-rose-50/90 border-rose-200 text-rose-900'
+          ? 'bg-amber-50/90 dark:bg-amber-950/40 border-amber-200 dark:border-amber-800/80 text-amber-900 dark:text-amber-200'
+          : 'bg-rose-50/90 dark:bg-rose-950/40 border-rose-200 dark:border-rose-800/80 text-rose-900 dark:text-rose-200'
       } ${className}`}
     >
       <div className="flex items-start gap-3 sm:gap-4">
         <div
           className={`p-2 rounded-xl flex-shrink-0 mt-0.5 ${
             isNetworkOrColdStart
-              ? 'bg-amber-100 text-amber-700'
-              : 'bg-rose-100 text-rose-700'
+              ? 'bg-amber-100 dark:bg-amber-900/60 text-amber-700 dark:text-amber-300'
+              : 'bg-rose-100 dark:bg-rose-900/60 text-rose-700 dark:text-rose-300'
           }`}
         >
           {isNetworkOrColdStart ? (
@@ -50,7 +50,7 @@ const ErrorMessage = ({
               <button
                 type="button"
                 onClick={onDismiss}
-                className="p-1 text-slate-400 hover:text-slate-600 rounded-lg hover:bg-slate-200/50 cursor-pointer transition-colors"
+                className="p-1 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 rounded-lg hover:bg-slate-200/50 dark:hover:bg-slate-800/60 cursor-pointer transition-colors"
                 title="Dismiss"
               >
                 <X className="w-4 h-4" />
@@ -63,7 +63,7 @@ const ErrorMessage = ({
           </p>
 
           {isNetworkOrColdStart && (
-            <div className="mt-2 text-[11px] font-medium text-amber-800 bg-amber-100/60 px-2.5 py-1 rounded-lg inline-block">
+            <div className="mt-2 text-[11px] font-medium text-amber-800 dark:text-amber-300 bg-amber-100/60 dark:bg-amber-950/70 px-2.5 py-1 rounded-lg inline-block">
               💡 Tip: Free cloud tiers (such as Render) automatically hibernate when idle and can take ~30-50 seconds to wake up.
             </div>
           )}

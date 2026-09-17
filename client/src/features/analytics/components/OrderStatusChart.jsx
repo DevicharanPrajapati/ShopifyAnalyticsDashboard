@@ -27,23 +27,23 @@ const OrderStatusChart = ({ data = [] }) => {
   const totalOrders = data.reduce((sum, item) => sum + (item.count || 0), 0);
 
   return (
-    <div className="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200 shadow-xs h-full flex flex-col justify-between min-w-0">
+    <div className="bg-white dark:bg-[#1e293b] p-4 sm:p-5 rounded-2xl border border-slate-200 dark:border-slate-700/80 shadow-xs h-full flex flex-col justify-between min-w-0 transition-colors duration-200">
       <div>
         <div className="flex items-center space-x-2 mb-4">
-          <PieIcon className="w-5 h-5 text-emerald-600 flex-shrink-0" />
-          <h2 className="text-sm sm:text-base font-bold text-slate-900">Order Payment Status</h2>
+          <PieIcon className="w-5 h-5 text-emerald-600 dark:text-emerald-400 flex-shrink-0" />
+          <h2 className="text-sm sm:text-base font-bold text-slate-900 dark:text-white">Order Payment Status</h2>
         </div>
 
         <div className="w-full h-44 sm:h-48 relative min-w-0 overflow-hidden">
           {data.length === 0 ? (
-            <div className="w-full h-full flex items-center justify-center text-slate-400 text-xs">
+            <div className="w-full h-full flex items-center justify-center text-slate-400 dark:text-slate-500 text-xs">
               No orders found
             </div>
           ) : (
             <>
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
-                  <Tooltip content={<CustomTooltip />}  cursor={false}/>
+                  <Tooltip content={<CustomTooltip />} cursor={false}/>
                   <Pie
                     data={data}
                     dataKey="count"
@@ -64,8 +64,8 @@ const OrderStatusChart = ({ data = [] }) => {
                 </PieChart>
               </ResponsiveContainer>
               <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-                <span className="text-lg sm:text-xl font-bold text-slate-900">{totalOrders}</span>
-                <span className="text-[10px] sm:text-[11px] text-slate-400 font-medium">Orders</span>
+                <span className="text-lg sm:text-xl font-bold text-slate-900 dark:text-white">{totalOrders}</span>
+                <span className="text-[10px] sm:text-[11px] text-slate-400 dark:text-slate-500 font-medium">Orders</span>
               </div>
             </>
           )}
@@ -79,15 +79,15 @@ const OrderStatusChart = ({ data = [] }) => {
                 className="w-2.5 h-2.5 rounded-full"
                 style={{ backgroundColor: STATUS_COLORS[item.status] || '#64748b' }}
               ></span>
-              <span className="capitalize text-slate-600 font-medium">{item.status}</span>
-              <span className="text-slate-400">({item.count})</span>
+              <span className="capitalize text-slate-600 dark:text-slate-300 font-medium">{item.status}</span>
+              <span className="text-slate-400 dark:text-slate-500">({item.count})</span>
             </div>
           ))}
         </div>
       </div>
 
-      <div className="mt-4 pt-3 border-t border-slate-100 text-center">
-        <span className="text-[11px] text-slate-400">
+      <div className="mt-4 pt-3 border-t border-slate-100 dark:border-slate-700/80 text-center">
+        <span className="text-[11px] text-slate-400 dark:text-slate-500">
           Distribution across financial statuses
         </span>
       </div>

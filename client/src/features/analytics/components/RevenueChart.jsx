@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useSelector } from "react-redux";
 import {
   AreaChart,
   Area,
@@ -144,6 +145,12 @@ const CustomTooltip = ({ active, payload, label, activeMetricKey }) => {
 };
 
 const RevenueChart = ({ data = [], selectedMetric = "revenue", overview }) => {
+  const { theme } = useSelector((state) => state.ui);
+  const isDark = theme === "dark";
+  const gridStroke = isDark ? "#334155" : "#f1f5f9";
+  const axisLineStroke = isDark ? "#475569" : "#e2e8f0";
+  const tickColor = isDark ? "#94a3b8" : "#64748b";
+
   // Chart Style / Type State ('area' | 'bar' | 'line') with localStorage persistence
   const [chartType, setChartType] = useState(() => {
     try {
@@ -191,11 +198,11 @@ const RevenueChart = ({ data = [], selectedMetric = "revenue", overview }) => {
         return (
           <>
             Period Total:{" "}
-            <span className="font-bold text-slate-900">
+            <span className="font-bold text-slate-900 dark:text-white">
               {totalOrders} completed orders
             </span>
             {" • "}
-            <span className="text-slate-500">
+            <span className="text-slate-500 dark:text-slate-400">
               ₹
               {totalRevenue.toLocaleString("en-IN", {
                 maximumFractionDigits: 0,
@@ -208,9 +215,9 @@ const RevenueChart = ({ data = [], selectedMetric = "revenue", overview }) => {
         return (
           <>
             Period Average:{" "}
-            <span className="font-bold text-slate-900">{avgConversion}%</span>
+            <span className="font-bold text-slate-900 dark:text-white">{avgConversion}%</span>
             {" • "}
-            <span className="text-slate-500">
+            <span className="text-slate-500 dark:text-slate-400">
               {totalOrders} conversions from store visits
             </span>
           </>
@@ -219,11 +226,11 @@ const RevenueChart = ({ data = [], selectedMetric = "revenue", overview }) => {
         return (
           <>
             Period Average:{" "}
-            <span className="font-bold text-slate-900">
+            <span className="font-bold text-slate-900 dark:text-white">
               ₹{avgAov.toLocaleString("en-IN")} per order
             </span>
             {" • "}
-            <span className="text-slate-500">
+            <span className="text-slate-500 dark:text-slate-400">
               {totalOrders} orders evaluated
             </span>
           </>
@@ -233,14 +240,14 @@ const RevenueChart = ({ data = [], selectedMetric = "revenue", overview }) => {
         return (
           <>
             Period Total:{" "}
-            <span className="font-bold text-slate-900">
+            <span className="font-bold text-slate-900 dark:text-white">
               ₹
               {totalRevenue.toLocaleString("en-IN", {
                 maximumFractionDigits: 0,
               })}
             </span>
             {" • "}
-            <span className="text-slate-700 font-semibold">
+            <span className="text-slate-700 dark:text-slate-300 font-semibold">
               {totalOrders} orders
             </span>
           </>
@@ -249,7 +256,7 @@ const RevenueChart = ({ data = [], selectedMetric = "revenue", overview }) => {
   };
 
   return (
-    <div className="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200 shadow-xs min-w-0 w-full overflow-hidden">
+    <div className="bg-white dark:bg-[#1e293b] p-4 sm:p-5 rounded-2xl border border-slate-200 dark:border-slate-700/80 shadow-xs min-w-0 w-full overflow-hidden transition-colors duration-200">
       {/* Header with Metric Information and Dual Selectors (Metric & Chart Style) */}
       <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3 mb-5">
         <div>
@@ -260,22 +267,22 @@ const RevenueChart = ({ data = [], selectedMetric = "revenue", overview }) => {
             >
               <ActiveIcon className="w-4 h-4" />
             </div>
-            <h2 className="text-base sm:text-lg font-bold text-slate-900">
+            <h2 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white">
               {activeConfig.label} Over Time
             </h2>
           </div>
-          <p className="text-xs text-slate-500 mt-1">{getSubtext()}</p>
+          <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">{getSubtext()}</p>
         </div>
 
         <div className="flex flex-wrap items-center gap-2.5 self-start lg:self-auto">
           {/* Chart Style / Type Switcher: Area | Bar | Line */}
-          <div className="flex items-center bg-slate-100 p-1 rounded-xl border border-slate-200/80">
+          <div className="flex items-center bg-slate-100 dark:bg-slate-900/80 p-1 rounded-xl border border-slate-200/80 dark:border-slate-700/80">
             <button
               onClick={() => handleChartTypeChange("area")}
               className={`px-2.5 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
                 chartType === "area"
-                  ? "bg-white text-emerald-700 shadow-xs ring-1 ring-slate-200/80"
-                  : "text-slate-500 hover:text-slate-900"
+                  ? "bg-white dark:bg-slate-800 text-emerald-700 dark:text-emerald-400 shadow-xs ring-1 ring-slate-200/80 dark:ring-slate-700"
+                  : "text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
               }`}
               title="Area Chart (Smooth gradient fill)"
             >
@@ -287,8 +294,8 @@ const RevenueChart = ({ data = [], selectedMetric = "revenue", overview }) => {
               onClick={() => handleChartTypeChange("bar")}
               className={`px-2.5 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
                 chartType === "bar"
-                  ? "bg-white text-emerald-700 shadow-xs ring-1 ring-slate-200/80"
-                  : "text-slate-500 hover:text-slate-900"
+                  ? "bg-white dark:bg-slate-800 text-emerald-700 dark:text-emerald-400 shadow-xs ring-1 ring-slate-200/80 dark:ring-slate-700"
+                  : "text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
               }`}
               title="Bar Chart (Discrete columns)"
             >
@@ -300,8 +307,8 @@ const RevenueChart = ({ data = [], selectedMetric = "revenue", overview }) => {
               onClick={() => handleChartTypeChange("line")}
               className={`px-2.5 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
                 chartType === "line"
-                  ? "bg-white text-emerald-700 shadow-xs ring-1 ring-slate-200/80"
-                  : "text-slate-500 hover:text-slate-900"
+                  ? "bg-white dark:bg-slate-800 text-emerald-700 dark:text-emerald-400 shadow-xs ring-1 ring-slate-200/80 dark:ring-slate-700"
+                  : "text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
               }`}
               title="Line Chart (Trend line & points)"
             >
@@ -311,13 +318,13 @@ const RevenueChart = ({ data = [], selectedMetric = "revenue", overview }) => {
           </div>
 
           {/* Selected Card Indicator (Name of currently selected KPI card) */}
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-slate-50 border border-slate-200 text-xs font-bold text-slate-800 shadow-2xs">
+          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700/80 text-xs font-bold text-slate-800 dark:text-slate-200 shadow-2xs">
             <span
               className="w-2 h-2 rounded-full"
               style={{ backgroundColor: activeConfig.stroke }}
             />
-            <span className="text-slate-400 font-medium">Selected:</span>
-            <span className="text-slate-900 font-extrabold">
+            <span className="text-slate-400 dark:text-slate-500 font-medium">Selected:</span>
+            <span className="text-slate-900 dark:text-white font-extrabold">
               {activeConfig.label}
             </span>
           </div>
@@ -327,7 +334,7 @@ const RevenueChart = ({ data = [], selectedMetric = "revenue", overview }) => {
       {/* Dynamic Recharts Chart Area (Morphs between Area, Bar, and Line) */}
       <div className="w-full h-64 sm:h-72 lg:h-80 min-w-0 overflow-hidden">
         {formattedData.length === 0 ? (
-          <div className="w-full h-full flex items-center justify-center text-slate-400 text-xs sm:text-sm">
+          <div className="w-full h-full flex items-center justify-center text-slate-400 dark:text-slate-500 text-xs sm:text-sm">
             No transaction records available for this date window
           </div>
         ) : (
@@ -341,19 +348,19 @@ const RevenueChart = ({ data = [], selectedMetric = "revenue", overview }) => {
                 <CartesianGrid
                   strokeDasharray="3 3"
                   vertical={false}
-                  stroke="#f1f5f9"
+                  stroke={gridStroke}
                 />
                 <XAxis
                   dataKey="displayDate"
                   tickLine={false}
-                  axisLine={{ stroke: "#e2e8f0" }}
-                  tick={{ fill: "#64748b", fontSize: 10 }}
+                  axisLine={{ stroke: axisLineStroke }}
+                  tick={{ fill: tickColor, fontSize: 10 }}
                   minTickGap={25}
                 />
                 <YAxis
                   tickLine={false}
-                  axisLine={{ stroke: "#e2e8f0" }}
-                  tick={{ fill: "#64748b", fontSize: 10 }}
+                  axisLine={{ stroke: axisLineStroke }}
+                  tick={{ fill: tickColor, fontSize: 10 }}
                   width={50}
                   tickFormatter={activeConfig.yAxisFormatter}
                 />
@@ -377,19 +384,19 @@ const RevenueChart = ({ data = [], selectedMetric = "revenue", overview }) => {
                 <CartesianGrid
                   strokeDasharray="3 3"
                   vertical={false}
-                  stroke="#f1f5f9"
+                  stroke={gridStroke}
                 />
                 <XAxis
                   dataKey="displayDate"
                   tickLine={false}
-                  axisLine={{ stroke: "#e2e8f0" }}
-                  tick={{ fill: "#64748b", fontSize: 10 }}
+                  axisLine={{ stroke: axisLineStroke }}
+                  tick={{ fill: tickColor, fontSize: 10 }}
                   minTickGap={25}
                 />
                 <YAxis
                   tickLine={false}
-                  axisLine={{ stroke: "#e2e8f0" }}
-                  tick={{ fill: "#64748b", fontSize: 10 }}
+                  axisLine={{ stroke: axisLineStroke }}
+                  tick={{ fill: tickColor, fontSize: 10 }}
                   width={50}
                   tickFormatter={activeConfig.yAxisFormatter}
                 />
@@ -407,7 +414,7 @@ const RevenueChart = ({ data = [], selectedMetric = "revenue", overview }) => {
                   activeDot={{
                     r: 6,
                     fill: activeConfig.stroke,
-                    stroke: "#ffffff",
+                    stroke: isDark ? "#0f172a" : "#ffffff",
                     strokeWidth: 2,
                   }}
                 />
@@ -441,19 +448,19 @@ const RevenueChart = ({ data = [], selectedMetric = "revenue", overview }) => {
                 <CartesianGrid
                   strokeDasharray="3 3"
                   vertical={false}
-                  stroke="#f1f5f9"
+                  stroke={gridStroke}
                 />
                 <XAxis
                   dataKey="displayDate"
                   tickLine={false}
-                  axisLine={{ stroke: "#e2e8f0" }}
-                  tick={{ fill: "#64748b", fontSize: 10 }}
+                  axisLine={{ stroke: axisLineStroke }}
+                  tick={{ fill: tickColor, fontSize: 10 }}
                   minTickGap={25}
                 />
                 <YAxis
                   tickLine={false}
-                  axisLine={{ stroke: "#e2e8f0" }}
-                  tick={{ fill: "#64748b", fontSize: 10 }}
+                  axisLine={{ stroke: axisLineStroke }}
+                  tick={{ fill: tickColor, fontSize: 10 }}
                   width={50}
                   tickFormatter={activeConfig.yAxisFormatter}
                 />
@@ -472,7 +479,7 @@ const RevenueChart = ({ data = [], selectedMetric = "revenue", overview }) => {
                   activeDot={{
                     r: 6,
                     fill: activeConfig.stroke,
-                    stroke: "#ffffff",
+                    stroke: isDark ? "#0f172a" : "#ffffff",
                     strokeWidth: 2,
                   }}
                 />

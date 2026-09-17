@@ -22,6 +22,7 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from 'recharts';
+import { useSelector } from 'react-redux';
 import { ordersAPI, analyticsAPI } from '../services/api';
 import Badge from '../components/common/Badge';
 import DateFilter from '../features/analytics/components/DateFilter';
@@ -56,6 +57,12 @@ const CustomAovTooltip = ({ active, payload, label }) => {
 };
 
 const OrdersPage = () => {
+  const { theme } = useSelector((state) => state.ui);
+  const isDark = theme === 'dark';
+  const gridStroke = isDark ? '#334155' : '#f1f5f9';
+  const axisLineStroke = isDark ? '#475569' : '#e2e8f0';
+  const tickColor = isDark ? '#94a3b8' : '#64748b';
+
   const [orders, setOrders] = useState([]);
   const [orderStats, setOrderStats] = useState({ fulfillment: [], priceTiers: [], aovTrend: [] });
   const [loading, setLoading] = useState(true);
@@ -151,10 +158,10 @@ const OrdersPage = () => {
       {/* Page Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
             Orders Analytics & Management
           </h1>
-          <p className="text-xs sm:text-sm text-slate-500 mt-1">
+          <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1">
             Track fulfillment performance, transaction volume, and customer order history
           </p>
         </div>
@@ -165,9 +172,9 @@ const OrdersPage = () => {
             fetchOrderStats();
           }}
           disabled={loading || statsLoading}
-          className="inline-flex items-center self-start sm:self-auto px-3.5 py-2 text-xs font-bold text-slate-700 bg-white border border-slate-200 hover:bg-slate-50 active:scale-95 rounded-xl transition-all cursor-pointer shadow-2xs disabled:opacity-50"
+          className="inline-flex items-center self-start sm:self-auto px-3.5 py-2 text-xs font-bold text-slate-700 dark:text-slate-200 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-750 active:scale-95 rounded-xl transition-all cursor-pointer shadow-2xs disabled:opacity-50"
         >
-          <RefreshCw className={`w-3.5 h-3.5 mr-1.5 text-slate-600 ${loading || statsLoading ? 'animate-spin text-emerald-600' : ''}`} />
+          <RefreshCw className={`w-3.5 h-3.5 mr-1.5 text-slate-600 dark:text-slate-400 ${loading || statsLoading ? 'animate-spin text-emerald-600 dark:text-emerald-400' : ''}`} />
           <span>Refresh</span>
         </button>
       </div>
@@ -182,52 +189,52 @@ const OrdersPage = () => {
 
       {/* Orders KPI Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200 shadow-xs">
+        <div className="bg-white dark:bg-[#1e293b] p-4 sm:p-5 rounded-2xl border border-slate-200 dark:border-slate-700/80 shadow-xs transition-colors duration-200">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">Orders in Range</span>
-            <div className="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center">
+            <span className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Orders in Range</span>
+            <div className="w-8 h-8 rounded-lg bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 flex items-center justify-center">
               <ShoppingCart className="w-4 h-4" />
             </div>
           </div>
-          <p className="text-2xl sm:text-3xl font-extrabold text-slate-900 mt-2">{totalOrdersCount}</p>
-          <p className="text-[11px] text-slate-400 mt-1">Total transactions recorded</p>
+          <p className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white mt-2">{totalOrdersCount}</p>
+          <p className="text-[11px] text-slate-400 dark:text-slate-500 mt-1">Total transactions recorded</p>
         </div>
 
-        <div className="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200 shadow-xs">
+        <div className="bg-white dark:bg-[#1e293b] p-4 sm:p-5 rounded-2xl border border-slate-200 dark:border-slate-700/80 shadow-xs transition-colors duration-200">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">Net Order Value</span>
-            <div className="w-8 h-8 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center">
+            <span className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Net Order Value</span>
+            <div className="w-8 h-8 rounded-lg bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 flex items-center justify-center">
               <IndianRupee className="w-4 h-4" />
             </div>
           </div>
-          <p className="text-2xl sm:text-3xl font-extrabold text-slate-900 mt-2">
+          <p className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white mt-2">
             ₹{totalOrderValue.toLocaleString('en-IN')}
           </p>
-          <p className="text-[11px] text-slate-400 mt-1">Gross sales for period</p>
+          <p className="text-[11px] text-slate-400 dark:text-slate-500 mt-1">Gross sales for period</p>
         </div>
 
-        <div className="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200 shadow-xs">
+        <div className="bg-white dark:bg-[#1e293b] p-4 sm:p-5 rounded-2xl border border-slate-200 dark:border-slate-700/80 shadow-xs transition-colors duration-200">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">Avg Order Value</span>
-            <div className="w-8 h-8 rounded-lg bg-purple-50 text-purple-600 flex items-center justify-center">
+            <span className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Avg Order Value</span>
+            <div className="w-8 h-8 rounded-lg bg-purple-50 dark:bg-purple-950/60 text-purple-600 dark:text-purple-400 flex items-center justify-center">
               <TrendingUp className="w-4 h-4" />
             </div>
           </div>
-          <p className="text-2xl sm:text-3xl font-extrabold text-slate-900 mt-2">
+          <p className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white mt-2">
             ₹{avgOrderValue.toLocaleString('en-IN')}
           </p>
-          <p className="text-[11px] text-slate-400 mt-1">Per transaction average</p>
+          <p className="text-[11px] text-slate-400 dark:text-slate-500 mt-1">Per transaction average</p>
         </div>
 
-        <div className="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200 shadow-xs">
+        <div className="bg-white dark:bg-[#1e293b] p-4 sm:p-5 rounded-2xl border border-slate-200 dark:border-slate-700/80 shadow-xs transition-colors duration-200">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">Fulfilled Orders</span>
-            <div className="w-8 h-8 rounded-lg bg-teal-50 text-teal-600 flex items-center justify-center">
+            <span className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Fulfilled Orders</span>
+            <div className="w-8 h-8 rounded-lg bg-teal-50 dark:bg-teal-950/60 text-teal-600 dark:text-teal-400 flex items-center justify-center">
               <PackageCheck className="w-4 h-4" />
             </div>
           </div>
-          <p className="text-2xl sm:text-3xl font-extrabold text-slate-900 mt-2">{fulfilledOrders}</p>
-          <p className="text-[11px] text-slate-400 mt-1">
+          <p className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white mt-2">{fulfilledOrders}</p>
+          <p className="text-[11px] text-slate-400 dark:text-slate-500 mt-1">
             {totalOrdersCount > 0 ? `${Math.round((fulfilledOrders / totalOrdersCount) * 100)}% fulfillment rate` : '0% fulfillment rate'}
           </p>
         </div>
@@ -236,36 +243,36 @@ const OrdersPage = () => {
       {/* Orders Charts: Price Tiers Breakdown & AOV Trend */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Chart 1: Order Value Tiers (Bar Chart) */}
-        <div className="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200 shadow-xs min-w-0">
+        <div className="bg-white dark:bg-[#1e293b] p-4 sm:p-5 rounded-2xl border border-slate-200 dark:border-slate-700/80 shadow-xs min-w-0 transition-colors duration-200">
           <div className="flex items-center space-x-2 mb-4">
-            <BarChart2 className="w-5 h-5 text-emerald-600" />
+            <BarChart2 className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
             <div>
-              <h3 className="text-sm sm:text-base font-bold text-slate-900">Order Value Tiers</h3>
-              <p className="text-[11px] text-slate-500">Distribution of order basket sizes in INR (₹)</p>
+              <h3 className="text-sm sm:text-base font-bold text-slate-900 dark:text-white">Order Value Tiers</h3>
+              <p className="text-[11px] text-slate-500 dark:text-slate-400">Distribution of order basket sizes in INR (₹)</p>
             </div>
           </div>
 
           <div className="w-full h-56 sm:h-64 min-w-0 overflow-hidden">
             {orderStats.priceTiers?.length === 0 ? (
-              <div className="w-full h-full flex items-center justify-center text-slate-400 text-xs">
+              <div className="w-full h-full flex items-center justify-center text-slate-400 dark:text-slate-500 text-xs">
                 No order tier data available
               </div>
             ) : (
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={orderStats.priceTiers} margin={{ top: 10, right: 10, left: -20, bottom: 20 }}>
-                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={gridStroke} />
                   <XAxis
                     dataKey="tier"
                     tickLine={false}
-                    axisLine={{ stroke: '#e2e8f0' }}
-                    tick={{ fill: '#64748b', fontSize: 10 }}
+                    axisLine={{ stroke: axisLineStroke }}
+                    tick={{ fill: tickColor, fontSize: 10 }}
                     angle={-15}
                     textAnchor="end"
                   />
                   <YAxis
                     tickLine={false}
-                    axisLine={{ stroke: '#e2e8f0' }}
-                    tick={{ fill: '#64748b', fontSize: 10 }}
+                    axisLine={{ stroke: axisLineStroke }}
+                    tick={{ fill: tickColor, fontSize: 10 }}
                   />
                   <Tooltip content={<CustomTierTooltip />} />
                   <Bar dataKey="count" name="Orders Count" fill="#10b981" radius={[6, 6, 0, 0]} />
@@ -276,29 +283,29 @@ const OrdersPage = () => {
         </div>
 
         {/* Chart 2: Daily Average Order Value (Line Chart) */}
-        <div className="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200 shadow-xs min-w-0">
+        <div className="bg-white dark:bg-[#1e293b] p-4 sm:p-5 rounded-2xl border border-slate-200 dark:border-slate-700/80 shadow-xs min-w-0 transition-colors duration-200">
           <div className="flex items-center space-x-2 mb-4">
-            <TrendingUp className="w-5 h-5 text-emerald-600" />
+            <TrendingUp className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
             <div>
-              <h3 className="text-sm sm:text-base font-bold text-slate-900">Daily Average Order Value (AOV)</h3>
-              <p className="text-[11px] text-slate-500">Fluctuations in customer spending per transaction</p>
+              <h3 className="text-sm sm:text-base font-bold text-slate-900 dark:text-white">Daily Average Order Value (AOV)</h3>
+              <p className="text-[11px] text-slate-500 dark:text-slate-400">Fluctuations in customer spending per transaction</p>
             </div>
           </div>
 
           <div className="w-full h-56 sm:h-64 min-w-0 overflow-hidden">
             {orderStats.aovTrend?.length === 0 ? (
-              <div className="w-full h-full flex items-center justify-center text-slate-400 text-xs">
+              <div className="w-full h-full flex items-center justify-center text-slate-400 dark:text-slate-500 text-xs">
                 No AOV records available
               </div>
             ) : (
               <ResponsiveContainer width="100%" height="100%">
                 <LineChart data={orderStats.aovTrend} margin={{ top: 10, right: 10, left: -10, bottom: 0 }}>
-                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={gridStroke} />
                   <XAxis
                     dataKey="date"
                     tickLine={false}
-                    axisLine={{ stroke: '#e2e8f0' }}
-                    tick={{ fill: '#64748b', fontSize: 10 }}
+                    axisLine={{ stroke: axisLineStroke }}
+                    tick={{ fill: tickColor, fontSize: 10 }}
                     minTickGap={25}
                     tickFormatter={(d) => {
                       const dt = new Date(d);
@@ -307,8 +314,8 @@ const OrdersPage = () => {
                   />
                   <YAxis
                     tickLine={false}
-                    axisLine={{ stroke: '#e2e8f0' }}
-                    tick={{ fill: '#64748b', fontSize: 10 }}
+                    axisLine={{ stroke: axisLineStroke }}
+                    tick={{ fill: tickColor, fontSize: 10 }}
                     tickFormatter={(val) => (val >= 1000 ? `₹${(val / 1000).toFixed(0)}k` : `₹${val}`)}
                   />
                   <Tooltip content={<CustomAovTooltip />} />
@@ -318,7 +325,7 @@ const OrdersPage = () => {
                     stroke="#10b981"
                     strokeWidth={2.5}
                     dot={{ r: 3, fill: '#10b981' }}
-                    activeDot={{ r: 6, fill: '#10b981', stroke: '#fff', strokeWidth: 2 }}
+                    activeDot={{ r: 6, fill: '#10b981', stroke: isDark ? '#0f172a' : '#fff', strokeWidth: 2 }}
                   />
                 </LineChart>
               </ResponsiveContainer>
@@ -328,7 +335,7 @@ const OrdersPage = () => {
       </div>
 
       {/* Filter and Search Bar for Orders Table */}
-      <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-2xs flex flex-col md:flex-row items-center justify-between gap-3">
+      <div className="bg-white dark:bg-[#1e293b] p-4 rounded-2xl border border-slate-200 dark:border-slate-700/80 shadow-2xs flex flex-col md:flex-row items-center justify-between gap-3 transition-colors duration-200">
         {/* Status Filter Pills */}
         <div className="flex items-center gap-1.5 overflow-x-auto w-full md:w-auto pb-1 md:pb-0 scrollbar-none">
           {[
@@ -346,7 +353,7 @@ const OrdersPage = () => {
               className={`px-3 py-1.5 text-xs font-bold rounded-xl transition-all cursor-pointer flex-shrink-0 active:scale-95 ${
                 statusFilter === tab.value
                   ? 'bg-emerald-600 text-white shadow-xs'
-                  : 'bg-slate-100 hover:bg-slate-200/80 text-slate-600'
+                  : 'bg-slate-100 dark:bg-slate-800 hover:bg-slate-200/80 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300'
               }`}
             >
               {tab.label}
@@ -363,14 +370,14 @@ const OrdersPage = () => {
               placeholder="Search order #, customer, email, city..."
               value={searchQuery}
               onChange={handleSearchChange}
-              className="w-full pl-9 pr-8 py-1.5 text-xs bg-slate-50 hover:bg-slate-100/70 focus:bg-white border border-slate-200 focus:border-emerald-500 rounded-xl outline-none text-slate-800 placeholder-slate-400 transition-all"
+              className="w-full pl-9 pr-8 py-1.5 text-xs bg-slate-50 dark:bg-slate-900 hover:bg-slate-100/70 dark:hover:bg-slate-850 focus:bg-white dark:focus:bg-slate-900 border border-slate-200 dark:border-slate-700 focus:border-emerald-500 rounded-xl outline-none text-slate-800 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 transition-all"
             />
             {searchQuery && (
               <button
                 type="button"
                 onClick={handleClearSearch}
                 title="Clear search"
-                className="absolute right-2.5 top-1/2 -translate-y-1/2 p-0.5 rounded-full hover:bg-slate-200 text-slate-400 hover:text-slate-600 transition-colors cursor-pointer"
+                className="absolute right-2.5 top-1/2 -translate-y-1/2 p-0.5 rounded-full hover:bg-slate-200 dark:hover:bg-slate-800 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors cursor-pointer"
               >
                 <X className="w-3.5 h-3.5" />
               </button>
@@ -378,7 +385,7 @@ const OrdersPage = () => {
           </div>
           <button
             type="submit"
-            className="px-3 py-1.5 text-xs font-bold bg-slate-900 hover:bg-slate-800 active:scale-95 text-white rounded-xl cursor-pointer transition-all shrink-0"
+            className="px-3 py-1.5 text-xs font-bold bg-slate-900 dark:bg-emerald-600 hover:bg-slate-800 dark:hover:bg-emerald-500 active:scale-95 text-white rounded-xl cursor-pointer transition-all shrink-0"
           >
             Search
           </button>
@@ -387,23 +394,23 @@ const OrdersPage = () => {
 
       {/* Active Search & Filter Indicators */}
       {(searchQuery || statusFilter) && (
-        <div className="flex flex-wrap items-center gap-2 text-xs text-slate-600 bg-white border border-slate-200 px-3.5 py-2.5 rounded-2xl shadow-2xs">
-          <span className="font-semibold text-slate-700">Active filters:</span>
+        <div className="flex flex-wrap items-center gap-2 text-xs text-slate-600 dark:text-slate-300 bg-white dark:bg-[#1e293b] border border-slate-200 dark:border-slate-700/80 px-3.5 py-2.5 rounded-2xl shadow-2xs">
+          <span className="font-semibold text-slate-700 dark:text-slate-200">Active filters:</span>
           {searchQuery && (
-            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-emerald-50 border border-emerald-200 text-emerald-800 font-medium rounded-xl text-[11px]">
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-800 text-emerald-800 dark:text-emerald-300 font-medium rounded-xl text-[11px]">
               <span>Search: <strong className="font-bold">"{searchQuery}"</strong></span>
               <button
                 type="button"
                 onClick={handleClearSearch}
-                className="p-0.5 hover:bg-emerald-100 rounded-full cursor-pointer transition-colors"
+                className="p-0.5 hover:bg-emerald-100 dark:hover:bg-emerald-900 rounded-full cursor-pointer transition-colors"
                 title="Remove search filter"
               >
-                <X className="w-3 h-3 text-emerald-700" />
+                <X className="w-3 h-3 text-emerald-700 dark:text-emerald-300" />
               </button>
             </span>
           )}
           {statusFilter && (
-            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-blue-50 border border-blue-200 text-blue-800 font-medium rounded-xl text-[11px]">
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-blue-50 dark:bg-blue-950/60 border border-blue-200 dark:border-blue-800 text-blue-800 dark:text-blue-300 font-medium rounded-xl text-[11px]">
               <span>Status: <strong className="font-bold capitalize">{statusFilter}</strong></span>
               <button
                 type="button"
@@ -411,14 +418,14 @@ const OrdersPage = () => {
                   setStatusFilter('');
                   setPage(1);
                 }}
-                className="p-0.5 hover:bg-blue-100 rounded-full cursor-pointer transition-colors"
+                className="p-0.5 hover:bg-blue-100 dark:hover:bg-blue-900 rounded-full cursor-pointer transition-colors"
                 title="Remove status filter"
               >
-                <X className="w-3 h-3 text-blue-700" />
+                <X className="w-3 h-3 text-blue-700 dark:text-blue-300" />
               </button>
             </span>
           )}
-          <span className="text-slate-400 font-normal ml-1">
+          <span className="text-slate-400 dark:text-slate-500 font-normal ml-1">
             ({orders.length} {orders.length === 1 ? 'order' : 'orders'} on this page)
           </span>
           <button
@@ -428,7 +435,7 @@ const OrdersPage = () => {
               setStatusFilter('');
               setPage(1);
             }}
-            className="ml-auto text-[11px] text-rose-600 hover:text-rose-700 font-bold cursor-pointer hover:underline"
+            className="ml-auto text-[11px] text-rose-600 dark:text-rose-400 hover:text-rose-700 dark:hover:text-rose-300 font-bold cursor-pointer hover:underline"
           >
             Clear all
           </button>
@@ -450,34 +457,34 @@ const OrdersPage = () => {
       )}
 
       {/* Orders List / Table */}
-      <div className="bg-white rounded-2xl border border-slate-200 shadow-2xs overflow-hidden">
+      <div className="bg-white dark:bg-[#1e293b] rounded-2xl border border-slate-200 dark:border-slate-700/80 shadow-2xs overflow-hidden transition-colors duration-200">
         {loading ? (
-          <div className="p-12 text-center text-slate-400 text-xs">
-            <RefreshCw className="w-6 h-6 mx-auto mb-2 animate-spin text-emerald-600" />
+          <div className="p-12 text-center text-slate-400 dark:text-slate-500 text-xs">
+            <RefreshCw className="w-6 h-6 mx-auto mb-2 animate-spin text-emerald-600 dark:text-emerald-400" />
             Loading orders...
           </div>
         ) : orders.length === 0 ? (
-          <div className="p-12 text-center text-slate-400 text-xs">
+          <div className="p-12 text-center text-slate-400 dark:text-slate-500 text-xs">
             <ShoppingCart className="w-8 h-8 mx-auto mb-2 opacity-30" />
             No orders match your filter criteria
           </div>
         ) : (
           <>
             {/* Mobile View */}
-            <div className="block sm:hidden divide-y divide-slate-100 p-4">
+            <div className="block sm:hidden divide-y divide-slate-100 dark:divide-slate-800 p-4">
               {orders.map((order) => (
                 <div key={order._id || order.orderNumber} className="py-3.5 first:pt-0 last:pb-0 space-y-1.5">
                   <div className="flex items-center justify-between">
-                    <span className="font-extrabold text-xs text-slate-900">{order.orderNumber}</span>
+                    <span className="font-extrabold text-xs text-slate-900 dark:text-white">{order.orderNumber}</span>
                     <Badge status={order.financialStatus} />
                   </div>
                   <div className="flex items-center justify-between text-xs">
-                    <span className="font-semibold text-slate-700">{order.customer?.name}</span>
-                    <span className="font-extrabold text-slate-900">
+                    <span className="font-semibold text-slate-700 dark:text-slate-200">{order.customer?.name}</span>
+                    <span className="font-extrabold text-slate-900 dark:text-white">
                       ₹{(order.totalAmount || 0).toLocaleString('en-IN', { maximumFractionDigits: 0 })}
                     </span>
                   </div>
-                  <div className="flex items-center justify-between text-[10px] text-slate-400">
+                  <div className="flex items-center justify-between text-[10px] text-slate-400 dark:text-slate-500">
                     <span>{order.items?.length || 1} items • {order.fulfillmentStatus}</span>
                     <span>{new Date(order.orderDate).toLocaleDateString()}</span>
                   </div>
@@ -489,7 +496,7 @@ const OrdersPage = () => {
             <div className="hidden sm:block overflow-x-auto">
               <table className="w-full text-left text-xs border-collapse">
                 <thead>
-                  <tr className="border-b border-slate-100 bg-slate-50/60 text-slate-400 font-bold uppercase tracking-wider text-[11px]">
+                  <tr className="border-b border-slate-100 dark:border-slate-700/80 bg-slate-50/60 dark:bg-slate-800/60 text-slate-400 dark:text-slate-400 font-bold uppercase tracking-wider text-[11px]">
                     <th className="py-3.5 px-5">Order</th>
                     <th className="py-3.5 px-4">Customer</th>
                     <th className="py-3.5 px-4">Date</th>
@@ -499,17 +506,17 @@ const OrdersPage = () => {
                     <th className="py-3.5 px-5 text-right">Total</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-100">
+                <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
                   {orders.map((order) => (
-                    <tr key={order._id || order.orderNumber} className="hover:bg-slate-50/70 transition-colors">
-                      <td className="py-3.5 px-5 font-extrabold text-slate-900 whitespace-nowrap">
+                    <tr key={order._id || order.orderNumber} className="hover:bg-slate-50/70 dark:hover:bg-slate-800/60 transition-colors">
+                      <td className="py-3.5 px-5 font-extrabold text-slate-900 dark:text-white whitespace-nowrap">
                         {order.orderNumber}
                       </td>
                       <td className="py-3.5 px-4">
-                        <p className="font-bold text-slate-800">{order.customer?.name || 'Guest'}</p>
-                        <p className="text-[10px] text-slate-400">{order.customer?.email}</p>
+                        <p className="font-bold text-slate-800 dark:text-slate-200">{order.customer?.name || 'Guest'}</p>
+                        <p className="text-[10px] text-slate-400 dark:text-slate-500">{order.customer?.email}</p>
                       </td>
-                      <td className="py-3.5 px-4 text-slate-500 whitespace-nowrap">
+                      <td className="py-3.5 px-4 text-slate-500 dark:text-slate-400 whitespace-nowrap">
                         {new Date(order.orderDate).toLocaleDateString('en-US', {
                           month: 'short',
                           day: 'numeric',
@@ -520,14 +527,14 @@ const OrdersPage = () => {
                         <Badge status={order.financialStatus} />
                       </td>
                       <td className="py-3.5 px-4 whitespace-nowrap">
-                        <span className="text-[11px] font-semibold text-slate-600 capitalize">
+                        <span className="text-[11px] font-semibold text-slate-600 dark:text-slate-300 capitalize">
                           {order.fulfillmentStatus || 'Fulfilled'}
                         </span>
                       </td>
-                      <td className="py-3.5 px-4 text-slate-600">
+                      <td className="py-3.5 px-4 text-slate-600 dark:text-slate-300">
                         {order.items?.length || 1} items
                       </td>
-                      <td className="py-3.5 px-5 text-right font-extrabold text-slate-900 whitespace-nowrap">
+                      <td className="py-3.5 px-5 text-right font-extrabold text-slate-900 dark:text-white whitespace-nowrap">
                         ₹{(order.totalAmount || 0).toLocaleString('en-IN', { maximumFractionDigits: 0 })}
                       </td>
                     </tr>
@@ -537,24 +544,24 @@ const OrdersPage = () => {
             </div>
 
             {/* Pagination Controls */}
-            <div className="p-4 border-t border-slate-100 flex items-center justify-between text-xs">
-              <span className="text-slate-500">
-                Page <span className="font-bold text-slate-800">{page}</span> of{' '}
-                <span className="font-bold text-slate-800">{totalPages}</span>
+            <div className="p-4 border-t border-slate-100 dark:border-slate-700/80 flex items-center justify-between text-xs">
+              <span className="text-slate-500 dark:text-slate-400">
+                Page <span className="font-bold text-slate-800 dark:text-slate-200">{page}</span> of{' '}
+                <span className="font-bold text-slate-800 dark:text-slate-200">{totalPages}</span>
               </span>
 
               <div className="flex items-center space-x-2">
                 <button
                   onClick={() => setPage((p) => Math.max(p - 1, 1))}
                   disabled={page === 1}
-                  className="p-1.5 rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50 disabled:opacity-30 cursor-pointer"
+                  className="p-1.5 rounded-lg border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 disabled:opacity-30 cursor-pointer"
                 >
                   <ChevronLeft className="w-4 h-4" />
                 </button>
                 <button
                   onClick={() => setPage((p) => Math.min(p + 1, totalPages))}
                   disabled={page >= totalPages}
-                  className="p-1.5 rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50 disabled:opacity-30 cursor-pointer"
+                  className="p-1.5 rounded-lg border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 disabled:opacity-30 cursor-pointer"
                 >
                   <ChevronRight className="w-4 h-4" />
                 </button>

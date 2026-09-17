@@ -91,16 +91,16 @@ const Logo = ({
       {showText && (
         <div className="flex flex-col">
           <div className="flex items-center">
-            <span className={`font-black text-slate-900 tracking-tight leading-tight ${currentSize.title}`}>
+            <span className={`font-black text-slate-900 dark:text-white tracking-tight leading-tight ${currentSize.title}`}>
               Shopify
             </span>
-            <span className={`font-black text-emerald-600 tracking-tight leading-tight ${currentSize.title}`}>
+            <span className={`font-black text-emerald-600 dark:text-emerald-400 tracking-tight leading-tight ${currentSize.title}`}>
               Store
             </span>
           </div>
           {subtitle && (
             <span
-              className={`font-bold text-emerald-700 uppercase tracking-wider leading-none mt-0.5 ${currentSize.sub}`}
+              className={`font-bold text-emerald-700 dark:text-emerald-400 uppercase tracking-wider leading-none mt-0.5 ${currentSize.sub}`}
             >
               {subtitle}
             </span>

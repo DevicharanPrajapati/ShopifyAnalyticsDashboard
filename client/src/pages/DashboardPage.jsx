@@ -75,11 +75,11 @@ const DashboardPage = () => {
       {/* Page Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
             Store Performance
           </h1>
-          <p className="text-xs sm:text-sm text-slate-500 mt-1">
-            Real-time sales trends, conversions, and customer analytics for <span className="font-bold text-slate-700">Apex Retailers</span>
+          <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1">
+            Real-time sales trends, conversions, and customer analytics for <span className="font-bold text-slate-700 dark:text-slate-300">Apex Retailers</span>
           </p>
         </div>
       </div>
